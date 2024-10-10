@@ -1,8 +1,38 @@
 {
   "pantry": [
     {
-      "id": "fd92",
-      "name": "loobia",
+      "id": "1",
+      "name": "Apples",
+      "category": "Fruit"
+    },
+    {
+      "id": "2",
+      "name": "Milk",
+      "category": "Dairy"
+    },
+    {
+      "id": "3",
+      "name": "Chicken Breast",
+      "category": "Protein"
+    },
+    {
+      "id": "de6d",
+      "name": "beans",
+      "category": "Uncategorized"
+    },
+    {
+      "id": "58f3",
+      "name": "sugar",
+      "category": "Uncategorized"
+    },
+    {
+      "id": "c3d8",
+      "name": "salt",
+      "category": "Uncategorized"
+    },
+    {
+      "id": "74cc",
+      "name": "ground beef",
       "category": "Uncategorized"
     }
   ]

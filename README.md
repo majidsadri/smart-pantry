@@ -11,3 +11,17 @@ Smart Pantry Manager
 ## Project Overview
 
 The Smart Pantry Manager provides users with a streamlined way to manage their pantry inventory, set dietary preferences, and receive meal suggestions based on what they already have. Users can add items to their pantry, view their current inventory, and get suggestions for recipes they can make. In addition, users can manage dietary restrictions for a healthier meal plan and keep track of grocery shopping lists.
+
+
+npm install @mui/material @emotion/react @emotion/styled
+
+npm install json-server --save-dev
+
+
+
+
+python3 app.py
+
+npm run server
+
+npm start

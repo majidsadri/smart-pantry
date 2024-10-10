@@ -1,14 +1,25 @@
 .pantry-container {
-    padding: 10px;
-    border: 1px solid #ddd;
-    margin: 10px;
-    border-radius: 5px;
-  }
-  .add-item input {
-    margin-right: 10px;
-  }
-  .item-list ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
+  padding: 20px;
+  margin: 20px auto;
+  border-radius: 10px;
+  max-width: 600px;
+}
+
+.add-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.item-list {
+  margin-top: 20px;
+  padding-left: 0;
+}
+
+.item-list li {
+  background-color: #f9f9f9;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 5px;
+}
