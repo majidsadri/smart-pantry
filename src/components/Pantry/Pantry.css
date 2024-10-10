@@ -1,0 +1,14 @@
+.pantry-container {
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin: 10px;
+    border-radius: 5px;
+  }
+  .add-item input {
+    margin-right: 10px;
+  }
+  .item-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  

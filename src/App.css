@@ -1,0 +1,47 @@
+body {
+  background-color: #f4f6f8;
+  font-family: 'Roboto', sans-serif;
+}
+
+h1, h2, h3 {
+  color: #333;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.pantry-container,
+.diet-preferences,
+.recipe-suggestions,
+.shopping-list {
+  margin: 10px 0;
+}
+
+.pantry-container {
+  padding: 10px;
+}
+
+.add-item input {
+  margin-right: 10px;
+}
+
+.add-item button {
+  background-color: #3f51b5;
+  color: white;
+}
+
+.item-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.item-list li {
+  background: #eee;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 4px;
+}
