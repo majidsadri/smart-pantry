@@ -1,39 +1,51 @@
 {
   "pantry": [
     {
-      "id": "1",
+      "id": 1,
       "name": "Apples",
       "category": "Fruit"
     },
     {
-      "id": "2",
+      "id": 2,
       "name": "Milk",
       "category": "Dairy"
     },
     {
-      "id": "3",
+      "id": 3,
       "name": "Chicken Breast",
       "category": "Protein"
     },
     {
-      "id": "de6d",
-      "name": "beans",
+      "id": "655f",
+      "name": "flour",
       "category": "Uncategorized"
+    }
+  ],
+  "recipes": [
+    {
+      "id": 1,
+      "recipe_name": "Tomato Soup",
+      "ingredients": "Tomato, Onion, Garlic"
     },
     {
-      "id": "58f3",
-      "name": "sugar",
-      "category": "Uncategorized"
+      "id": 2,
+      "recipe_name": "Chicken Salad",
+      "ingredients": "Chicken, Lettuce, Cucumber"
     },
     {
-      "id": "c3d8",
-      "name": "salt",
-      "category": "Uncategorized"
+      "id": 3,
+      "recipe_name": "Veggie Pasta",
+      "ingredients": "Pasta, Tomato, Basil"
     },
     {
-      "id": "74cc",
-      "name": "ground beef",
-      "category": "Uncategorized"
+      "id": 4,
+      "recipe_name": "Pancakes",
+      "ingredients": "Flour, Milk, Egg"
+    },
+    {
+      "id": 5,
+      "recipe_name": "Grilled Cheese",
+      "ingredients": "Bread, Cheese, Butter"
     }
   ]
 }

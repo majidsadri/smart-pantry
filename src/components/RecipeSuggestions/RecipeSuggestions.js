@@ -4,10 +4,9 @@ import { Typography, List, ListItem, ListItemText } from "@mui/material";
 const RecipeSuggestions = ({ pantryItems }) => {
   const [recipes, setRecipes] = useState([]);
 
-  // Fetch recipe suggestions from the Flask backend
   useEffect(() => {
     if (pantryItems.length > 0) {
-      console.log("Fetching recipe suggestions for pantry items:", pantryItems);
+      console.log("Pantry items being sent to backend:", pantryItems);
 
       // Make a POST request to the Flask backend with the pantry items
       fetch("http://127.0.0.1:5001/recommend", {
@@ -17,12 +16,30 @@ const RecipeSuggestions = ({ pantryItems }) => {
         },
         body: JSON.stringify({ pantry: pantryItems }),
       })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Received recipe recommendations:", data);
-          setRecipes(data);
+        .then((response) => {
+          console.log("Backend response status:", response.status); // Log status code
+          console.log("Backend response headers:", response.headers); // Log headers
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
         })
-        .catch((error) => console.error("Error fetching recipe recommendations:", error));
+        .then((data) => {
+          console.log("Raw response data:", data); // Debug the raw response data
+          if (Array.isArray(data) && data.length > 0) {
+            console.log("Valid recipes received:", data);
+            setRecipes(data);
+          } else {
+            console.error("No valid recipes found or response is in unexpected format.");
+            setRecipes([]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching recipe recommendations:", error);
+          setRecipes([]); // Set to empty if an error occurs
+        });
+    } else {
+      console.log("No pantry items provided, skipping fetch.");
     }
   }, [pantryItems]); // Re-run the effect when pantryItems changes
 
