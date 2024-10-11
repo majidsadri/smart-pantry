@@ -1,26 +1,5 @@
 {
-  "pantry": [
-    {
-      "id": "1",
-      "name": "Apples",
-      "category": "Fruit"
-    },
-    {
-      "id": "2",
-      "name": "Milk",
-      "category": "Dairy"
-    },
-    {
-      "id": "3",
-      "name": "Chicken Breast",
-      "category": "Protein"
-    },
-    {
-      "id": "61c5",
-      "name": "beef",
-      "category": "Uncategorized"
-    }
-  ],
+  "pantry": [],
   "recipes": [
     {
       "id": "1",

@@ -1,64 +1,80 @@
 import React, { useState, useEffect } from "react";
-import { Typography, TextField, Button, List, ListItem, ListItemText, Paper } from "@mui/material";
-import "./Pantry.css";
+import { Button, TextField, List, ListItem, ListItemText, IconButton, Paper, Typography } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Pantry = ({ updatePantryItems }) => {
-  const [items, setItems] = useState([]); // Start with an empty array
-  const [newItem, setNewItem] = useState(""); // State for the new item input
+  const [pantryInput, setPantryInput] = useState("");
+  const [pantryList, setPantryList] = useState([]);
 
-  // Fetch items from the backend when the component mounts
   useEffect(() => {
+    // Fetch pantry items from the backend
     fetch("http://localhost:5000/pantry")
       .then((response) => response.json())
       .then((data) => {
-        console.log("Fetched pantry items:", data);
-        setItems(data || []); // Ensure data is always an array
-        updatePantryItems(data.map((item) => item.name) || []); // Pass the names to the parent (App.js)
+        setPantryList(data || []);
+        updatePantryItems(data.map((item) => item.name) || []);
       })
       .catch((error) => console.error("Error fetching pantry items:", error));
   }, [updatePantryItems]);
 
-  // Add a new item to the pantry and update the backend
-  const addItem = () => {
-    if (newItem.trim()) {
-      const item = { name: newItem, category: "Uncategorized" };
+  const handleAddItem = () => {
+    if (pantryInput.trim()) {
+      const newItem = { name: pantryInput.trim(), category: "Uncategorized" };
+      // Send the new item to the backend
       fetch("http://localhost:5000/pantry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(item),
+        body: JSON.stringify(newItem),
       })
         .then((response) => response.json())
-        .then((newItem) => {
-          const updatedItems = [...items, newItem];
-          setItems(updatedItems);
-          updatePantryItems(updatedItems.map((item) => item.name)); // Update the parent with the new names
+        .then((addedItem) => {
+          const updatedPantryList = [...pantryList, addedItem];
+          setPantryList(updatedPantryList);
+          updatePantryItems(updatedPantryList.map((item) => item.name));
         })
         .catch((error) => console.error("Error adding pantry item:", error));
-      setNewItem(""); // Clear the input field after adding
+      setPantryInput("");
     }
   };
 
+  const handleRemoveItem = (itemToRemove) => {
+    // Remove the item from the backend
+    fetch(`http://localhost:5000/pantry/${itemToRemove.id}`, {
+      method: "DELETE",
+    })
+      .then(() => {
+        const updatedPantryList = pantryList.filter((item) => item.id !== itemToRemove.id);
+        setPantryList(updatedPantryList);
+        updatePantryItems(updatedPantryList.map((item) => item.name));
+      })
+      .catch((error) => console.error("Error removing pantry item:", error));
+  };
+
   return (
-    <Paper className="pantry-container" elevation={3} style={{ padding: "20px" }}>
+    <Paper elevation={3} style={{ padding: "20px" }}>
       <Typography variant="h5" gutterBottom>
-        Pantry
+        Pantry Management
       </Typography>
       <div style={{ marginBottom: "20px" }}>
         <TextField
-          variant="outlined"
           label="Add item to pantry"
-          value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
+          value={pantryInput}
+          onChange={(e) => setPantryInput(e.target.value)}
           style={{ marginRight: "10px" }}
         />
-        <Button variant="contained" color="primary" onClick={addItem}>
+        <Button variant="contained" onClick={handleAddItem}>
           Add
         </Button>
       </div>
+
       <Typography variant="h6">Current Pantry Items</Typography>
       <List>
-        {items.map((item, index) => (
-          <ListItem key={index}>
+        {pantryList.map((item) => (
+          <ListItem key={item.id} secondaryAction={
+            <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveItem(item)}>
+              <DeleteIcon />
+            </IconButton>
+          }>
             <ListItemText primary={item.name} />
           </ListItem>
         ))}
