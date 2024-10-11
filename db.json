@@ -1,5 +1,16 @@
 {
-  "pantry": [],
+  "pantry": [
+    {
+      "id": "5f9d",
+      "name": "sugar",
+      "category": "Uncategorized"
+    },
+    {
+      "id": "c1df",
+      "name": "apple",
+      "category": "Uncategorized"
+    }
+  ],
   "recipes": [
     {
       "id": "1",

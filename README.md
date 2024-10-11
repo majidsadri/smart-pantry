@@ -21,9 +21,78 @@ npm install json-server --save-dev
 
 
 
+pip install scikit-learn pandas requests kaggle flask 
 
 python3 app.py
 
 npm run server
 
 npm start
+
+
+EC2:
+
+cat /etc/systemd/system/smart-pantry.service
+[Unit]
+Description=Smart Pantry Python Application
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/smart-pantry/backend
+ExecStart=/home/ubuntu/smart-pantry/venv/bin/python3 /home/ubuntu/smart-pantry/backend/app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+cat /etc/systemd/system/smart-pantry-server.service
+[Unit]
+Description=Smart Pantry Node Server
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/smart-pantry
+ExecStart=/usr/bin/npm run server
+Restart=always
+Environment="PATH=/usr/bin:/home/ubuntu/smart-pantry/node_modules/.bin"
+Environment="NODE_ENV=production"
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=smart-pantry-server
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+sudo systemctl status smart-pantry.service
+
+
+
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAmLbEVwv4MUUYGomhv2mvCMU3yR4ctzb42PUtqqutVLgJM3loUHXgKh/EZkQ9
+0abUoEd6E00fqTrkxkXQGcIDNymJLprMowZ+0gVAUOfuUhPIRU9qk8MyN9KWIQ0BI6tyTgULnZgG
+hz4g9t9OLuXfdvHKIBYzqeC3mxEndggxYVWTsn1+qPxLeAE/qI3llWngGVMwoj4lSiNGgxja82MJ
+0qN9HrEAHywOC5Z146CvvQPpWmakARLDSEktRen0v0wadSVuVU0KzR54q9RsInx3HMMTI+N9EfTd
+Jf39KdE47yJyA3GlaiqY75WILjvZValRkchAr//1SwJVbE4OJWhyywIDAQABAoIBAHf3I3fqHDfA
+OnYmZlzyzaCLJQ6lzBMVaRkuSYiIQqqJxBieqBaE8urEd8mKlDGM5/1dCQX+kP+lFzC2iQqjAVml
+FHH7AwSSRq//lg24lNv/VFU2VNftABcgI/WkvJ9jwHCPwBc15PL7GHQ26bkntYs/1/Oq3Tz3HeT/
+7croFrqJf775u0dduEy479RvyAyAsdcKamBQGqVP6HVToLfncTDq7XzdCzYRH60ORd84TTODUfCa
+ELZaGMyplE+n0eKI451f3rGHnQN4YzlBDdK7CJpbNXOdUS3aVIBGOJzqQDqV4eaviibhYwnNY/n6
+E9HhvhzgVZtq6bGWX3ZiM73+uokCgYEA6F0k62KE+2NuSFSbJBjTDv4i5flI49jieHW+2C49cLM9
+kv5jggl5Nz/8nmpU+spXG38Tojky2dyTRXCLDLdOKeBMnuGsUGHQBN63SRBmiY2x7aXQ6ufeJXcM
+ya9RFTL1GZGgLrFPcY2LQ1qNI4NqvojgwGl7AsyiBdWOaD6AvD8CgYEAqD+BHCc4AmcKxWq7+KAf
+vkbPrba+krYLjiyPBcfizAEt9jhqsNVtWrmmgc4L4euYtoGV0jJaIWhRQxP1iT0HqQkbXLbAE8PQ
+su8elWeeXLetrqPqHt2onUQwSvzmhJr+tz4mzs7gbNQDVA0Hu/PcXgE6v58fOppDAfMAGeZbFnUC
+gYBdOtoQU3QVxTw/ayrgHdG5B0CLUyzqtl+Pg3ayGENwj4oaC1VznEd1YogCK5mzEjJHBwKiqR59
+CSJRzykLThTfem5jpRpVGhmzioSxnRH3CNImDsy3I5cfIxgPZ/c5cTukKajCc0PzxJ3mxVMxt43B
+qvu6V9gSNHahrqC3tLREUwKBgF4DplSiAaUuCRHJk6HZcAN2NCRgwlreyNQ4R+82A6B1ZEZ6vft0
+N3gD12wfQ/qJGLua66oaIs0aKpZt970pUjd9dEG5iNlCiUMDZTadQRuUM8Qrqe53c/n1GXs9mF4u
+8fhZDXxwk22chwOXiGPZX6FT1I0xEFVB0AGt1LekRe/lAoGAbdKMxFnjnBHz6rXYjWlAx5fRn541
+mnWSWCxjCmBTBmUhUcNpXgnGOsBVlAEOn5kW6DqGXNSXicdgeqMeZ/y977ynG7Gnob60rL4dW0cr
+yUoftiz38csWuL6ken2rmYOkcfrH+JNNgWGidjb/YRv0+274QU8joiMjyd2FhEuDggw=
+-----END RSA PRIVATE KEY-----
