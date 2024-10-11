@@ -21,7 +21,7 @@ npm install json-server --save-dev
 
 sudo apt install python3-dev
 sudo apt install python3-pip
-pip install scikit-learn pandas requests kaggle flask 
+pip install scikit-learn pandas requests kaggle flask  flask-cors scikit-learn pandas 
 
 python3 app.py
 
