@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Container, Typography, Grid, Paper } from "@mui/material";
 import Pantry from "./components/Pantry/Pantry";
-import DietPreferences from "./components/DietPreferences/DietPreferences";
+import Profile from "./components/Profile/Profile"; // Assuming the Profile includes diet preferences
 import RecipeSuggestions from "./components/RecipeSuggestions/RecipeSuggestions";
 import ShoppingList from "./components/ShoppingList/ShoppingList";
 import "./App.css"; // Make sure the custom CSS file is linked properly
@@ -20,7 +20,7 @@ function App() {
     setPantryItems(items);
   };
 
-  // Handler to update diet preferences from the DietPreferences component
+  // Handler to update diet preferences from the Profile component
   const updateDietPreferences = (diet, restrictions) => {
     setDietPreferences({ diet, restrictions });
   };
@@ -45,9 +45,9 @@ function App() {
           variant="h3"
           gutterBottom
           style={{
-            fontFamily: "'Pacifico', cursive",
+            fontFamily: "'Arial', sans-serif",
             color: "#4A4A4A",
-            fontSize: "3rem",
+            fontSize: "2.5rem",
           }}
         >
           Smart Pantry Manager
@@ -56,14 +56,14 @@ function App() {
 
       {/* Main Grid with Two Columns */}
       <Grid container spacing={3}>
-        {/* Left Column: Diet Preferences and Pantry Management */}
+        {/* Left Column: Profile (with Diet Preferences) and Pantry Management */}
         <Grid item xs={12} md={6}>
-          {/* Diet Preferences Section */}
+          {/* Profile Section */}
           <Paper elevation={3} style={{ padding: "20px", marginBottom: "20px", minHeight: "270px" }}>
             <Typography variant="h5" align="left" gutterBottom>
-              Diet Preferences
+              Settings
             </Typography>
-            <DietPreferences updateDietPreferences={updateDietPreferences} />
+            <Profile updateDietPreferences={updateDietPreferences} />
           </Paper>
 
           {/* Pantry Management Section */}
@@ -93,7 +93,10 @@ function App() {
             <Typography variant="h5" align="left" gutterBottom>
               Shopping List
             </Typography>
-            <ShoppingList />
+            <ShoppingList
+              pantryItems={pantryItems}
+              dietPreferences={dietPreferences}
+            />
           </Paper>
         </Grid>
       </Grid>

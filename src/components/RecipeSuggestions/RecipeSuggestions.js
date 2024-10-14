@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Typography, CircularProgress, Button } from "@mui/material";
 
-const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
+const RecipeSuggestions = ({ pantryItems, dietPreferences, profile }) => {
   const [recipes, setRecipes] = useState([]); // Store all the recipes
   const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0); // Track current recipe
   const [loading, setLoading] = useState(false);
@@ -18,6 +18,7 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
         pantry: pantryItems,
         diet: dietPreferences.diet,
         restrictions: dietPreferences.restrictions,
+        profile: profile, // Include profile information in the request
       }),
     })
       .then((response) => response.json())
@@ -44,26 +45,15 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
 
   const handleDislike = () => {
     if (currentRecipeIndex < recipes.length - 1) {
-      setCurrentRecipeIndex(prevIndex => {
-        console.log("Current Index:", prevIndex); // Debug: log current index
-        console.log("Recipes Length:", recipes.length); // Debug: log total recipes
-        return prevIndex + 1;
-      });
+      setCurrentRecipeIndex((prevIndex) => prevIndex + 1);
     } else {
       alert("No more recipes to show.");
     }
   };
-  
 
   return (
     <div style={{ marginTop: "20px" }}>
-
-<Button
-        variant="contained"
-        color="primary"
-        onClick={fetchSuggestions}
-        style={{ marginBottom: "20px" }}
-      >
+      <Button variant="contained" color="primary" onClick={fetchSuggestions} style={{ marginBottom: "20px" }}>
         Suggest me a recipe
       </Button>
 
@@ -71,23 +61,16 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
         Recipe Suggestions from you!
       </Typography>
 
-
       {loading ? (
         <CircularProgress />
       ) : recipes.length > 0 ? (
         <div>
           {recipes[currentRecipeIndex] && (
             <>
-              <Typography
-                variant="h6"
-                style={{ fontWeight: "bold", color: "#3f51b5" }}
-              >
+              <Typography variant="h6" style={{ fontWeight: "bold", color: "#3f51b5" }}>
                 {recipes[currentRecipeIndex].title}
               </Typography>
-              <Typography
-                variant="body1"
-                style={{ whiteSpace: "pre-line", marginTop: "10px" }}
-              >
+              <Typography variant="body1" style={{ whiteSpace: "pre-line", marginTop: "10px" }}>
                 {recipes[currentRecipeIndex].instructions}
               </Typography>
             </>
@@ -96,11 +79,7 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
             <Button variant="contained" color="primary" onClick={handleLike}>
               Like
             </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleDislike}
-            >
+            <Button variant="contained" color="secondary" onClick={handleDislike}>
               Dislike
             </Button>
           </div>
@@ -111,7 +90,5 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
     </div>
   );
 };
-
-
 
 export default RecipeSuggestions;
