@@ -8,6 +8,7 @@ const Profile = ({ updateDietPreferences }) => {
   const [diet, setDiet] = useState("None");
   const [restrictions, setRestrictions] = useState("");
   const [cookDays, setCookDays] = useState(0);
+  const [usualMeals, setUsualMeals] = useState(""); // New state for usual meals
 
   // Load saved profile from local storage (if available)
   useEffect(() => {
@@ -15,6 +16,7 @@ const Profile = ({ updateDietPreferences }) => {
     if (savedPreferences) {
       setDiet(savedPreferences.diet);
       setRestrictions(savedPreferences.restrictions);
+      setUsualMeals(savedPreferences.usualMeals); // Load usual meals from saved preferences
     }
   }, []); // Only run this effect once on mount
 
@@ -25,10 +27,14 @@ const Profile = ({ updateDietPreferences }) => {
       cookDays,
       diet,
       restrictions,
+      usualMeals, // Save the usual meals in profile data
     };
 
     // Save to local storage
-    localStorage.setItem("dietPreferences", JSON.stringify({ diet, restrictions }));
+    localStorage.setItem(
+      "dietPreferences",
+      JSON.stringify({ diet, restrictions, usualMeals })
+    );
 
     // Call the parent function to update the preferences globally
     updateDietPreferences(diet, restrictions);
@@ -104,6 +110,30 @@ const Profile = ({ updateDietPreferences }) => {
             placeholder="e.g., No dairy, No gluten"
             fullWidth
           />
+        </Grid>
+
+        {/* New Question for Usual Meals */}
+        <Grid item xs={12}>
+          <Typography variant="h6" gutterBottom>
+            Usual Meals
+          </Typography>
+          <TextField
+            select
+            label="What are your usual meals?"
+            value={usualMeals}
+            onChange={(e) => setUsualMeals(e.target.value)}
+            fullWidth
+          >
+            <MenuItem value="Steaks">Steaks</MenuItem>
+            <MenuItem value="Salads">Salads</MenuItem>
+            <MenuItem value="Salad and Protein">Salad and Protein</MenuItem>
+            <MenuItem value="Indian Traditional">Indian Traditional</MenuItem>
+            <MenuItem value="Persian">Persian</MenuItem>
+            <MenuItem value="Chinese">Chinese</MenuItem>
+            <MenuItem value="Fish and Seafood">Fish and Seafood</MenuItem>
+            <MenuItem value="Fast Food">Fast Food</MenuItem>
+            <MenuItem value="Other">Other</MenuItem>
+          </TextField>
         </Grid>
 
         <Grid item xs={12}>
