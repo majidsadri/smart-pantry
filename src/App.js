@@ -26,7 +26,7 @@ function App() {
   };
 
   return (
-    <Container maxWidth="md" style={{ marginTop: "40px", textAlign: "center" }}>
+    <Container maxWidth="lg" style={{ marginTop: "40px" }}>
       {/* Custom Logo and Title Section */}
       <div
         style={{
@@ -44,26 +44,30 @@ function App() {
         <Typography
           variant="h3"
           gutterBottom
-          style={{ fontFamily: "'Pacifico', cursive", color: "#4A4A4A", fontSize: "3rem" }}
+          style={{
+            fontFamily: "'Pacifico', cursive",
+            color: "#4A4A4A",
+            fontSize: "3rem",
+          }}
         >
           Smart Pantry Manager
         </Typography>
       </div>
 
-      <Grid container spacing={3} justifyContent="center">
-        {/* Diet Preferences Section */}
-        <Grid item xs={12}>
-          <Paper elevation={3} style={{ padding: "20px" }}>
+      {/* Main Grid with Two Columns */}
+      <Grid container spacing={3}>
+        {/* Left Column: Diet Preferences and Pantry Management */}
+        <Grid item xs={12} md={6}>
+          {/* Diet Preferences Section */}
+          <Paper elevation={3} style={{ padding: "20px", marginBottom: "20px", minHeight: "270px" }}>
             <Typography variant="h5" align="left" gutterBottom>
               Diet Preferences
             </Typography>
             <DietPreferences updateDietPreferences={updateDietPreferences} />
           </Paper>
-        </Grid>
 
-        {/* Pantry Management Section */}
-        <Grid item xs={12}>
-          <Paper elevation={3} style={{ padding: "30px" }}>
+          {/* Pantry Management Section */}
+          <Paper elevation={3} style={{ padding: "20px", minHeight: "300px" }}>
             <Typography variant="h5" align="left" gutterBottom>
               Pantry Management
             </Typography>
@@ -71,9 +75,10 @@ function App() {
           </Paper>
         </Grid>
 
-        {/* Recipe Suggestions Section */}
-        <Grid item xs={12}>
-          <Paper elevation={3} style={{ padding: "20px" }}>
+        {/* Right Column: Recipe Suggestions and Shopping List */}
+        <Grid item xs={12} md={6}>
+          {/* Recipe Suggestions Section */}
+          <Paper elevation={3} style={{ padding: "20px", marginBottom: "20px", minHeight: "270px" }}>
             <Typography variant="h5" align="left" gutterBottom>
               Recipe Suggestions
             </Typography>
@@ -82,11 +87,9 @@ function App() {
               dietPreferences={dietPreferences}
             />
           </Paper>
-        </Grid>
 
-        {/* Shopping List Section */}
-        <Grid item xs={12}>
-          <Paper elevation={3} style={{ padding: "20px" }}>
+          {/* Shopping List Section */}
+          <Paper elevation={3} style={{ padding: "20px", minHeight: "300px" }}>
             <Typography variant="h5" align="left" gutterBottom>
               Shopping List
             </Typography>

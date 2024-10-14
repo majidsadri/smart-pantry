@@ -1,0 +1,58 @@
+.diet-preferences {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .diet-preferences h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #4a4a4a;
+  }
+  
+  .diet-input-group {
+    margin-bottom: 15px;
+    width: 100%;
+  }
+  
+  .diet-input-group label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  .diet-select, 
+  .diet-input {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+  }
+  
+  .diet-select:focus, 
+  .diet-input:focus {
+    border-color: #3f51b5;
+    outline: none;
+  }
+  
+  .diet-select {
+    background-color: #fff;
+  }
+  
+  .diet-input {
+    margin-top: 5px;
+  }
+  
+  .diet-preferences .diet-input-group:last-child {
+    margin-bottom: 0; /* Remove margin on the last item to make spacing even */
+  }
+  

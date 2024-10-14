@@ -57,11 +57,8 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
 
   return (
     <div style={{ marginTop: "20px" }}>
-      <Typography variant="h5" gutterBottom>
-        Recipe Suggestions from you!
-      </Typography>
 
-      <Button
+<Button
         variant="contained"
         color="primary"
         onClick={fetchSuggestions}
@@ -69,6 +66,11 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
       >
         Give me a recipe
       </Button>
+
+      <Typography variant="h5" gutterBottom>
+        Recipe Suggestions from you!
+      </Typography>
+
 
       {loading ? (
         <CircularProgress />
