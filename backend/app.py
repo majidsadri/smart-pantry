@@ -18,12 +18,13 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # Function to get GPT suggestions based on pantry items and diet preferences
 # Function to get GPT suggestions based on pantry items and diet preferences
 def get_gpt_suggestions(pantry_items, diet, restrictions):
-    # Create a more explicit and structured prompt for GPT
+    # Create a flexible and structured prompt for GPT
     prompt = f"Based on the following pantry items: {', '.join(pantry_items)}, suggest 10 simple and unique recipes."
 
     if diet and diet.lower() != "none":
-        prompt += f" The recipes should be suitable for a {diet} diet."
-    
+        # Modify this part to allow GPT more flexibility
+        prompt += f" The recipes should be suitable for a {diet} diet, but you can be flexible with the ingredients."
+
     if restrictions:
         prompt += f" Also, consider the following dietary restrictions: {restrictions}."
 
@@ -72,6 +73,7 @@ def get_gpt_suggestions(pantry_items, diet, restrictions):
     except Exception as e:
         logging.error(f"Error getting GPT suggestions: {e}")
         return [{"title": "Error", "instructions": "Error generating suggestions."}]
+
 
 
 @app.route('/recommend', methods=['POST'])

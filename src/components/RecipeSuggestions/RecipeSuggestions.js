@@ -25,7 +25,11 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
         if (data.suggestions && data.suggestions.length > 0) {
           const filteredRecipes = data.suggestions.filter((recipe) => {
             if (dietPreferences.diet === "Vegan") {
-              return !recipe.title.toLowerCase().includes("salmon") && !recipe.title.toLowerCase().includes("meat") && !recipe.title.toLowerCase().includes("cheese");
+              return (
+                !recipe.title.toLowerCase().includes("salmon") &&
+                !recipe.title.toLowerCase().includes("meat") &&
+                !recipe.title.toLowerCase().includes("cheese")
+              );
             }
             if (dietPreferences.diet === "Keto") {
               // Add filtering logic for Keto if needed
@@ -34,7 +38,11 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
             return true; // Allow all recipes if no specific diet restriction
           });
 
-          setRecipes(filteredRecipes.length > 0 ? filteredRecipes : [{ title: "No recipe suggestions available", instructions: "" }]);
+          setRecipes(
+            filteredRecipes.length > 0
+              ? filteredRecipes
+              : [{ title: "No recipe suggestions available", instructions: "" }]
+          );
           setCurrentRecipeIndex(0); // Show the first recipe
         } else {
           setRecipes([{ title: "No recipe suggestions available", instructions: "" }]);
@@ -49,17 +57,16 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
       });
   };
 
+  // Handle Like button click
   const handleLike = () => {
     alert("You liked the recipe!");
+    // You can implement further functionality like storing liked recipes
   };
 
+  // Handle Dislike button click, show the next recipe if available
   const handleDislike = () => {
     if (currentRecipeIndex < recipes.length - 1) {
-      setCurrentRecipeIndex((prevIndex) => {
-        console.log("Current Index:", prevIndex); // Debug: log current index
-        console.log("Recipes Length:", recipes.length); // Debug: log total recipes
-        return prevIndex + 1;
-      });
+      setCurrentRecipeIndex((prevIndex) => prevIndex + 1);
     } else {
       alert("No more recipes to show.");
     }
@@ -67,7 +74,12 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
 
   return (
     <div style={{ marginTop: "20px" }}>
-      <Button variant="contained" color="primary" onClick={fetchSuggestions} style={{ marginBottom: "20px" }}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={fetchSuggestions}
+        style={{ marginBottom: "20px" }}
+      >
         Suggest me a recipe
       </Button>
 
@@ -93,7 +105,12 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
             <Button variant="contained" color="primary" onClick={handleLike}>
               Like
             </Button>
-            <Button variant="contained" color="secondary" onClick={handleDislike}>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleDislike}
+              style={{ marginLeft: "10px" }}
+            >
               Dislike
             </Button>
           </div>

@@ -1,21 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Paper, TextField, Button, MenuItem, Typography, Grid } from "@mui/material";
-import "./Profile.css"; // Optional if you want to style this component separately
+import "./Profile.css";
 
-const Profile = ({ updateProfile }) => {
-  const [purpose, setPurpose] = useState("Single");
+const Profile = ({ updateDietPreferences }) => {
+  const [purpose, setPurpose] = useState("Single Person");
   const [familyMembers, setFamilyMembers] = useState(1);
   const [diet, setDiet] = useState("None");
+  const [restrictions, setRestrictions] = useState("");
   const [cookDays, setCookDays] = useState(0);
 
-  const handleSubmit = () => {
+  // Load saved profile from local storage (if available)
+  useEffect(() => {
+    const savedPreferences = JSON.parse(localStorage.getItem("dietPreferences"));
+    if (savedPreferences) {
+      setDiet(savedPreferences.diet);
+      setRestrictions(savedPreferences.restrictions);
+    }
+  }, []); // Only run this effect once on mount
+
+  const handleProfileSubmit = () => {
     const profileData = {
       purpose,
-      familyMembers: purpose === "Family" ? familyMembers : 1, // Set family members to 1 for non-family cases
-      diet,
+      familyMembers: purpose === "Family" ? familyMembers : 1,
       cookDays,
+      diet,
+      restrictions,
     };
-    updateProfile(profileData); // Pass profile data to the parent
+
+    // Save to local storage
+    localStorage.setItem("dietPreferences", JSON.stringify({ diet, restrictions }));
+
+    // Call the parent function to update the preferences globally
+    updateDietPreferences(diet, restrictions);
+
+    console.log(profileData); // You can store or use this data as needed.
   };
 
   return (
@@ -24,7 +42,6 @@ const Profile = ({ updateProfile }) => {
         Profile Settings
       </Typography>
       <Grid container spacing={3}>
-        {/* Purpose of the app */}
         <Grid item xs={12}>
           <TextField
             select
@@ -33,13 +50,12 @@ const Profile = ({ updateProfile }) => {
             onChange={(e) => setPurpose(e.target.value)}
             fullWidth
           >
-            <MenuItem value="Single">Single Person</MenuItem>
+            <MenuItem value="Single Person">Single Person</MenuItem>
             <MenuItem value="Couple">Couple</MenuItem>
             <MenuItem value="Family">Family</MenuItem>
           </TextField>
         </Grid>
 
-        {/* Number of family members (if purpose is Family) */}
         {purpose === "Family" && (
           <Grid item xs={12}>
             <TextField
@@ -52,23 +68,6 @@ const Profile = ({ updateProfile }) => {
           </Grid>
         )}
 
-        {/* Usual diet */}
-        <Grid item xs={12}>
-          <TextField
-            select
-            label="What's your usual diet?"
-            value={diet}
-            onChange={(e) => setDiet(e.target.value)}
-            fullWidth
-          >
-            <MenuItem value="None">None</MenuItem>
-            <MenuItem value="Vegan">Vegan</MenuItem>
-            <MenuItem value="Keto">Keto</MenuItem>
-            <MenuItem value="Low-Carb">Low-Carb</MenuItem>
-          </TextField>
-        </Grid>
-
-        {/* How many days per week do you cook at home */}
         <Grid item xs={12}>
           <TextField
             label="How many days per week do you cook at home?"
@@ -80,7 +79,35 @@ const Profile = ({ updateProfile }) => {
         </Grid>
 
         <Grid item xs={12}>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
+          <Typography variant="h6" gutterBottom>
+            Diet Preferences
+          </Typography>
+          <TextField
+            select
+            label="Preferred Diet"
+            value={diet}
+            onChange={(e) => setDiet(e.target.value)}
+            fullWidth
+          >
+            <MenuItem value="None">None</MenuItem>
+            <MenuItem value="Vegan">Vegan</MenuItem>
+            <MenuItem value="Keto">Keto</MenuItem>
+            <MenuItem value="Low-Carb">Low-Carb</MenuItem>
+          </TextField>
+        </Grid>
+
+        <Grid item xs={12}>
+          <TextField
+            label="Dietary Restrictions"
+            value={restrictions}
+            onChange={(e) => setRestrictions(e.target.value)}
+            placeholder="e.g., No dairy, No gluten"
+            fullWidth
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Button variant="contained" color="primary" onClick={handleProfileSubmit}>
             Save Profile
           </Button>
         </Grid>
