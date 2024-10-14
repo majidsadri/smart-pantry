@@ -72,6 +72,14 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
     }
   };
 
+  // Dynamic title based on the diet preferences
+  const getTitle = () => {
+    if (dietPreferences.diet && dietPreferences.diet !== "None") {
+      return `${dietPreferences.diet} Recipe Suggestions from you!`;
+    }
+    return "Recipe Suggestions from you!";
+  };
+
   return (
     <div style={{ marginTop: "20px" }}>
       <Button
@@ -84,7 +92,7 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
       </Button>
 
       <Typography variant="h5" gutterBottom>
-        Recipe Suggestions from you!
+        {getTitle()}
       </Typography>
 
       {loading ? (
