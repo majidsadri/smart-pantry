@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Button, Typography, Paper, List, ListItem, ListItemText } from "@mui/material";
+import { Button, Typography, Paper, List, ListItem, ListItemText, ListItemIcon, Divider } from "@mui/material";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import "./ShoppingList.css";
 
 const dietItems = {
@@ -18,9 +20,10 @@ const ShoppingList = ({ pantryItems, dietPreferences }) => {
       const requiredItems = dietItems[dietPreferences.diet] || [];
 
       // Compare the required diet items with pantry items
-      const missingItems = requiredItems.filter(item => {
-        // Check if the pantry does not have the item
-        return !pantryItems.some(pantryItem => pantryItem.name.toLowerCase() === item.toLowerCase());
+      const missingItems = requiredItems.filter((item) => {
+        return !pantryItems.some(
+          (pantryItem) => pantryItem.name && pantryItem.name.toLowerCase() === item.toLowerCase()
+        );
       });
 
       setShoppingList(missingItems);
@@ -34,23 +37,47 @@ const ShoppingList = ({ pantryItems, dietPreferences }) => {
       <Typography variant="h5" gutterBottom>
         Shopping List
       </Typography>
-      <Typography>
-        Based on your {dietPreferences.diet} diet, here are the items you are missing:
+      <Typography variant="body1" style={{ marginBottom: "15px" }}>
+        Based on your <strong>{dietPreferences.diet}</strong> diet, here are the items you are missing:
       </Typography>
+
+      <Divider style={{ marginBottom: "15px" }} />
+
       <List>
         {shoppingList.length > 0 ? (
           shoppingList.map((item, index) => (
             <ListItem key={index}>
-              <ListItemText primary={item} />
+              <ListItemIcon>
+                <ShoppingCartIcon style={{ color: "#4caf50" }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  <Typography variant="h6" style={{ color: "#333" }}>
+                    {item.charAt(0).toUpperCase() + item.slice(1)}
+                  </Typography>
+                }
+              />
             </ListItem>
           ))
         ) : (
           <ListItem>
-            <ListItemText primary="No items needed. You're all set!" />
+            <ListItemIcon>
+              <CheckCircleIcon style={{ color: "#4caf50" }} />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Typography variant="h6" style={{ color: "#4caf50" }}>
+                  No items needed. You're all set!
+                </Typography>
+              }
+            />
           </ListItem>
         )}
       </List>
-      <Button variant="contained" color="primary">
+
+      <Divider style={{ margin: "20px 0" }} />
+
+      <Button variant="contained" color="primary" fullWidth>
         Complete Shopping
       </Button>
     </Paper>
