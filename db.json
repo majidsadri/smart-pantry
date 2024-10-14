@@ -1,13 +1,23 @@
 {
   "pantry": [
     {
-      "id": "5f9d",
-      "name": "sugar",
+      "id": "11eb",
+      "name": "salt",
       "category": "Uncategorized"
     },
     {
-      "id": "c1df",
-      "name": "apple",
+      "id": "8dd1",
+      "name": "tomato",
+      "category": "Uncategorized"
+    },
+    {
+      "id": "f65a",
+      "name": "chicken",
+      "category": "Uncategorized"
+    },
+    {
+      "id": "4beb",
+      "name": "cucumber",
       "category": "Uncategorized"
     }
   ],

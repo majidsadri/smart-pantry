@@ -2,15 +2,25 @@
 import React, { useState } from "react";
 import "./DietPreferences.css";
 
-const DietPreferences = () => {
-  const [diet, setDiet] = useState("");
+const DietPreferences = ({ updateDietPreferences }) => {
+  const [diet, setDiet] = useState("None");
   const [restrictions, setRestrictions] = useState("");
+
+  const handleDietChange = (e) => {
+    setDiet(e.target.value);
+    updateDietPreferences(e.target.value, restrictions);
+  };
+
+  const handleRestrictionsChange = (e) => {
+    setRestrictions(e.target.value);
+    updateDietPreferences(diet, e.target.value);
+  };
 
   return (
     <div className="diet-preferences">
       <h2>Diet Preferences</h2>
       <label>Preferred Diet:</label>
-      <select value={diet} onChange={(e) => setDiet(e.target.value)}>
+      <select value={diet} onChange={handleDietChange}>
         <option value="None">None</option>
         <option value="Vegan">Vegan</option>
         <option value="Keto">Keto</option>
@@ -21,7 +31,7 @@ const DietPreferences = () => {
       <input
         type="text"
         value={restrictions}
-        onChange={(e) => setRestrictions(e.target.value)}
+        onChange={handleRestrictionsChange}
         placeholder="e.g., No dairy, No gluten"
       />
     </div>

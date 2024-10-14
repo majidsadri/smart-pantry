@@ -1,13 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import pandas as pd
-import requests
+import openai
 import logging
-import re
 import os
-import kaggle
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -15,100 +10,97 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend-backend communication
 
-# Function to download the dataset from Kaggle if it doesn't exist locally
-def download_recipe_dataset():
-    dataset_path = './RecipeNLG_dataset.csv'
+# Set your OpenAI API key (make sure to export this as an environment variable)
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+# Function to get GPT suggestions based on pantry items and diet preferences
+# Function to get GPT suggestions based on pantry items and diet preferences
+# Function to get GPT suggestions based on pantry items and diet preferences
+# Function to get GPT suggestions based on pantry items and diet preferences
+def get_gpt_suggestions(pantry_items, diet, restrictions):
+    # Create a more explicit and structured prompt for GPT
+    prompt = f"Based on the following pantry items: {', '.join(pantry_items)}, suggest 10 simple and unique recipes."
+
+    if diet and diet.lower() != "none":
+        prompt += f" The recipes should be suitable for a {diet} diet."
     
-    if not os.path.exists(dataset_path):
-        logging.info("Downloading dataset from Kaggle...")
-        try:
-            kaggle.api.dataset_download_files('paultimothymooney/recipenlg', path='./', unzip=True)
-            logging.info("Dataset downloaded successfully!")
-        except Exception as e:
-            logging.error(f"Error downloading dataset: {e}")
-    else:
-        logging.info(f"Dataset {dataset_path} already exists!")
+    if restrictions:
+        prompt += f" Also, consider the following dietary restrictions: {restrictions}."
 
-# Download the dataset if necessary
-download_recipe_dataset()
+    # Specify the format again
+    prompt += """
+    Provide each recipe in the following format:
+    Title: Recipe Name
+    Instructions: Step-by-step instructions.
+    """
 
-# Load the RecipeNLG dataset
-file_path = 'RecipeNLG_dataset.csv'
-logging.info(f"Loading RecipeNLG dataset from {file_path}...")
+    logging.info(f"GPT Prompt: {prompt}")
 
-try:
-    df = pd.read_csv(file_path, usecols=['title', 'NER'], nrows=1000)  # Use a subset for faster testing
-    df.rename(columns={'title': 'recipe_name', 'NER': 'ingredients'}, inplace=True)
-    logging.info(f"Data loaded successfully! Number of recipes loaded: {len(df)}")
-except Exception as e:
-    logging.error(f"Error loading dataset: {e}")
-    df = pd.DataFrame()
+    try:
+        # Call the OpenAI API using the 'gpt-3.5-turbo' model
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "system", "content": "You are a helpful assistant that suggests recipes."},
+                      {"role": "user", "content": prompt}]
+        )
 
-# Preprocess the ingredients to clean up and standardize formatting
-def preprocess_ingredients(ingredient_list):
-    # Remove quantities and special characters, convert to lowercase
-    cleaned_ingredients = [re.sub(r'[^a-zA-Z\s]', '', ing).lower().strip() for ing in eval(ingredient_list)]
-    return ' '.join(cleaned_ingredients)
+        suggestions = response['choices'][0]['message']['content'].strip()
 
-# Apply preprocessing to the ingredients column
-logging.info("Preprocessing ingredients...")
-df['ingredients'] = df['ingredients'].apply(preprocess_ingredients)
-logging.info(f"Sample preprocessed ingredients: {df['ingredients'].head(5)}")
+        # Split suggestions into individual recipes
+        recipe_list = suggestions.split("\n")
+        final_recipes = []
+        current_recipe = {"title": "", "instructions": ""}
 
-# Initialize CountVectorizer
-logging.info("Initializing CountVectorizer and computing similarity matrix...")
-count = CountVectorizer()
-count_matrix = count.fit_transform(df['ingredients'])
+        for line in recipe_list:
+            if line.startswith("Title:"):
+                if current_recipe["title"]:  # If a recipe already exists, add it to final_recipes
+                    final_recipes.append(current_recipe)
+                current_recipe = {"title": line.replace("Title:", "").strip(), "instructions": ""}
+            elif line.startswith("Instructions:"):
+                current_recipe["instructions"] = line.replace("Instructions:", "").strip()
+            else:
+                current_recipe["instructions"] += " " + line.strip()  # Append additional instruction lines
 
-logging.info("CountVectorizer initialized and similarity matrix computed successfully.")
+        # Add the last recipe
+        if current_recipe["title"]:
+            final_recipes.append(current_recipe)
 
-# Function to generate recommendations
-def get_recommendations(pantry_items, count, count_matrix, df):
-    # Preprocess the pantry items to match the ingredient format
-    pantry_string = ' '.join([re.sub(r'[^a-zA-Z\s]', '', item).lower().strip() for item in pantry_items])
-    logging.info(f"Generating recommendations for pantry items: {pantry_string}")
+        if len(final_recipes) > 0:
+            return final_recipes
+        else:
+            return [{"title": "No recipes available", "instructions": "Sorry, we couldn't generate recipes based on the current inputs."}]
+    except Exception as e:
+        logging.error(f"Error getting GPT suggestions: {e}")
+        return [{"title": "Error", "instructions": "Error generating suggestions."}]
 
-    # Vectorize the pantry items
-    pantry_vec = count.transform([pantry_string])
-    logging.debug(f"Vectorized pantry items: {pantry_vec}")
-
-    # Calculate similarity with each recipe
-    pantry_sim = cosine_similarity(pantry_vec, count_matrix)
-    logging.debug(f"Similarity scores: {pantry_sim}")
-
-    # Sort recipes based on similarity scores
-    similar_indices = pantry_sim[0].argsort()[-5:][::-1]
-    logging.info(f"Top similar recipe indices: {similar_indices}")
-
-    # Get top 5 recipes and their similarity scores
-    similar_recipes = df.iloc[similar_indices].copy()
-    similar_recipes['similarity_score'] = pantry_sim[0][similar_indices]
-
-    # Print the recipes and similarity scores for debugging
-    logging.info(f"Matching recipes:\n{similar_recipes[['recipe_name', 'ingredients', 'similarity_score']]}")
-
-    # Filter recipes with a similarity score above a certain threshold
-    filtered_recipes = similar_recipes[similar_recipes['similarity_score'] > 0.0]
-    logging.info(f"Number of recommended recipes: {len(filtered_recipes)}")
-
-    # Return the filtered recommended recipes
-    return filtered_recipes[['recipe_name', 'ingredients']].to_dict(orient='records')
 
 @app.route('/recommend', methods=['POST'])
 def recommend():
-    # Get pantry items from the request body
+    # Get pantry items, diet, and restrictions from the request
     pantry_items = request.json.get('pantry', [])
-    logging.info(f"Pantry Items from Request: {pantry_items}")
+    diet = request.json.get('diet', "None")
+    restrictions = request.json.get('restrictions', "")
 
-    # Ensure that the DataFrame is not empty
-    if df.empty:
-        logging.error("Recipe dataset is empty. Cannot generate recommendations.")
-        return jsonify([])
+    logging.info(f"Pantry Items: {pantry_items}")
+    logging.info(f"Diet: {diet}")
+    logging.info(f"Restrictions: {restrictions}")
 
-    # Get recommendations based on the pantry items
-    recommendations = get_recommendations(pantry_items, count, count_matrix, df)
-    logging.info(f"Recommendations generated successfully: {recommendations}")
-    return jsonify(recommendations)
+    if not pantry_items:
+        logging.error("No pantry items provided. Cannot generate recommendations.")
+        return jsonify({"error": "No pantry items provided."}), 400
+
+    # Get GPT-based recipe suggestions
+    gpt_suggestions = get_gpt_suggestions(pantry_items, diet, restrictions)
+    
+    # If GPT fails to provide valid suggestions, fallback to error
+    if len(gpt_suggestions) == 0 or "Error" in gpt_suggestions[0]["title"]:
+        return jsonify({"suggestions": [{"title": "No recipes available", "instructions": "Sorry, we couldn't generate recipes based on the current inputs."}]}), 200
+
+    logging.info(f"GPT suggestions: {gpt_suggestions}")
+
+    # Return the suggestions in a JSON response
+    return jsonify({"suggestions": gpt_suggestions})
+
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)

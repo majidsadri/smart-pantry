@@ -1,85 +1,115 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Typography, List, ListItem, ListItemText, CircularProgress } from "@mui/material";
+import React, { useState } from "react";
+import { Typography, CircularProgress, Button } from "@mui/material";
 
-const RecipeSuggestions = ({ pantryItems }) => {
-  const [recipes, setRecipes] = useState([]);
+const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
+  const [recipes, setRecipes] = useState([]); // Store all the recipes
+  const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0); // Track current recipe
   const [loading, setLoading] = useState(false);
-  const [lastPantryItems, setLastPantryItems] = useState([]); // Track last pantry items
 
-  const isFirstRender = useRef(true); // To handle initial render
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return; // Skip the first render to avoid unnecessary fetch
-    }
-
-    // Only fetch recipes if pantryItems are provided and different from the last fetched items
-    if (pantryItems.length > 0 && JSON.stringify(pantryItems) !== JSON.stringify(lastPantryItems)) {
-      setLastPantryItems(pantryItems); // Update last pantry items to prevent refetching the same items
-      fetchRecipes(pantryItems); // Call fetch function
-    }
-  }, [pantryItems]);
-
-  const fetchRecipes = (pantryItems) => {
+  // Function to fetch recipe suggestions
+  const fetchSuggestions = () => {
     setLoading(true);
-    console.log("Fetching recipes with pantry items:", pantryItems);
-
     fetch("http://127.0.0.1:5001/recommend", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ pantry: pantryItems }),
+      body: JSON.stringify({
+        pantry: pantryItems,
+        diet: dietPreferences.diet,
+        restrictions: dietPreferences.restrictions,
+      }),
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setRecipes(data);
+        if (data.suggestions && data.suggestions.length > 0) {
+          setRecipes(data.suggestions); // Update recipes state
+          setCurrentRecipeIndex(0); // Show the first recipe
         } else {
-          setRecipes([]);
+          setRecipes([{ title: "No recipe suggestions available", instructions: "" }]);
         }
       })
       .catch((error) => {
-        console.error("Error fetching recipe recommendations:", error);
-        setRecipes([]); // Set to empty if an error occurs
+        console.error("Error fetching recipe suggestions:", error);
+        setRecipes([{ title: "Error generating suggestions", instructions: "" }]); // Show error in UI
       })
       .finally(() => {
-        setLoading(false); // Stop loading after fetch completes
+        setLoading(false);
       });
   };
+
+  const handleLike = () => {
+    alert("You liked the recipe!");
+  };
+
+  const handleDislike = () => {
+    if (currentRecipeIndex < recipes.length - 1) {
+      setCurrentRecipeIndex(prevIndex => {
+        console.log("Current Index:", prevIndex); // Debug: log current index
+        console.log("Recipes Length:", recipes.length); // Debug: log total recipes
+        return prevIndex + 1;
+      });
+    } else {
+      alert("No more recipes to show.");
+    }
+  };
+  
 
   return (
     <div style={{ marginTop: "20px" }}>
       <Typography variant="h5" gutterBottom>
-        Recipe Suggestions
+        Recipe Suggestions from you!
       </Typography>
 
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={fetchSuggestions}
+        style={{ marginBottom: "20px" }}
+      >
+        Give me a recipe
+      </Button>
+
       {loading ? (
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <CircularProgress />
-        </div>
+        <CircularProgress />
       ) : recipes.length > 0 ? (
-        <List>
-          {recipes.map((recipe, index) => (
-            <ListItem key={index}>
-              <ListItemText
-                primary={`Suggested Recipe: ${recipe.recipe_name}`}
-                secondary={`Ingredients: ${recipe.ingredients}`}
-              />
-            </ListItem>
-          ))}
-        </List>
+        <div>
+          {recipes[currentRecipeIndex] && (
+            <>
+              <Typography
+                variant="h6"
+                style={{ fontWeight: "bold", color: "#3f51b5" }}
+              >
+                {recipes[currentRecipeIndex].title}
+              </Typography>
+              <Typography
+                variant="body1"
+                style={{ whiteSpace: "pre-line", marginTop: "10px" }}
+              >
+                {recipes[currentRecipeIndex].instructions}
+              </Typography>
+            </>
+          )}
+          <div style={{ marginTop: "20px" }}>
+            <Button variant="contained" color="primary" onClick={handleLike}>
+              Like
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleDislike}
+            >
+              Dislike
+            </Button>
+          </div>
+        </div>
       ) : (
         <Typography>No recipe suggestions available.</Typography>
       )}
     </div>
   );
 };
+
+
 
 export default RecipeSuggestions;
