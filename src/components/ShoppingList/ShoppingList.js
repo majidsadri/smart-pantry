@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Paper, Button, List, ListItem, ListItemText } from "@mui/material";
+import { Button, Typography, Paper, List, ListItem, ListItemText } from "@mui/material";
 import "./ShoppingList.css";
 
 const dietItems = {
   Vegan: ["tofu", "vegetables", "fruits", "lentils", "beans", "nuts", "seeds"],
   Keto: ["meat", "fish", "eggs", "butter", "cheese", "avocado", "olive oil"],
   "Low-Carb": ["meat", "fish", "eggs", "leafy greens", "nuts", "berries"],
-  None: [], // No specific diet, so no specific requirements
+  None: [],
 };
 
 const ShoppingList = ({ pantryItems, dietPreferences }) => {
@@ -16,7 +16,13 @@ const ShoppingList = ({ pantryItems, dietPreferences }) => {
   useEffect(() => {
     const generateShoppingList = () => {
       const requiredItems = dietItems[dietPreferences.diet] || [];
-      const missingItems = requiredItems.filter(item => !pantryItems.includes(item));
+
+      // Compare the required diet items with pantry items
+      const missingItems = requiredItems.filter(item => {
+        // Check if the pantry does not have the item
+        return !pantryItems.some(pantryItem => pantryItem.name.toLowerCase() === item.toLowerCase());
+      });
+
       setShoppingList(missingItems);
     };
 
@@ -24,11 +30,11 @@ const ShoppingList = ({ pantryItems, dietPreferences }) => {
   }, [pantryItems, dietPreferences]);
 
   return (
-    <Paper elevation={3} style={{ padding: "20px", minHeight: "300px" }}>
+    <Paper elevation={3} style={{ padding: "20px" }}>
       <Typography variant="h5" gutterBottom>
         Shopping List
       </Typography>
-      <Typography variant="body1" style={{ marginBottom: "10px" }}>
+      <Typography>
         Based on your {dietPreferences.diet} diet, here are the items you are missing:
       </Typography>
       <List>
@@ -44,7 +50,7 @@ const ShoppingList = ({ pantryItems, dietPreferences }) => {
           </ListItem>
         )}
       </List>
-      <Button variant="contained" color="primary" onClick={() => alert("You can now shop!")}>
+      <Button variant="contained" color="primary">
         Complete Shopping
       </Button>
     </Paper>

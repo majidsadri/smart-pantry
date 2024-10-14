@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Typography, CircularProgress, Button } from "@mui/material";
 
-const RecipeSuggestions = ({ pantryItems, dietPreferences, profile }) => {
+const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
   const [recipes, setRecipes] = useState([]); // Store all the recipes
   const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0); // Track current recipe
   const [loading, setLoading] = useState(false);
@@ -18,13 +18,23 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences, profile }) => {
         pantry: pantryItems,
         diet: dietPreferences.diet,
         restrictions: dietPreferences.restrictions,
-        profile: profile, // Include profile information in the request
       }),
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.suggestions && data.suggestions.length > 0) {
-          setRecipes(data.suggestions); // Update recipes state
+          const filteredRecipes = data.suggestions.filter((recipe) => {
+            if (dietPreferences.diet === "Vegan") {
+              return !recipe.title.toLowerCase().includes("salmon") && !recipe.title.toLowerCase().includes("meat") && !recipe.title.toLowerCase().includes("cheese");
+            }
+            if (dietPreferences.diet === "Keto") {
+              // Add filtering logic for Keto if needed
+              return true;
+            }
+            return true; // Allow all recipes if no specific diet restriction
+          });
+
+          setRecipes(filteredRecipes.length > 0 ? filteredRecipes : [{ title: "No recipe suggestions available", instructions: "" }]);
           setCurrentRecipeIndex(0); // Show the first recipe
         } else {
           setRecipes([{ title: "No recipe suggestions available", instructions: "" }]);
@@ -45,7 +55,11 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences, profile }) => {
 
   const handleDislike = () => {
     if (currentRecipeIndex < recipes.length - 1) {
-      setCurrentRecipeIndex((prevIndex) => prevIndex + 1);
+      setCurrentRecipeIndex((prevIndex) => {
+        console.log("Current Index:", prevIndex); // Debug: log current index
+        console.log("Recipes Length:", recipes.length); // Debug: log total recipes
+        return prevIndex + 1;
+      });
     } else {
       alert("No more recipes to show.");
     }

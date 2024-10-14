@@ -13,28 +13,28 @@
       "measurement": "units"
     },
     {
-      "id": "2598",
-      "name": "Salmon",
-      "amount": "1",
-      "measurement": "units"
-    },
-    {
       "id": "9a54",
       "name": "Sugar",
       "amount": "200",
       "measurement": "grams"
     },
     {
-      "id": "879d",
-      "name": "Salt",
-      "amount": "2",
-      "measurement": "units"
-    },
-    {
       "id": "6f55",
       "name": "Oranges",
       "amount": "3",
       "measurement": "units"
+    },
+    {
+      "id": "c5d0",
+      "name": "Lentil",
+      "amount": "2",
+      "measurement": "Unit"
+    },
+    {
+      "id": "f1cf",
+      "name": "Salt",
+      "amount": "2",
+      "measurement": "grams"
     }
   ],
   "recipes": [

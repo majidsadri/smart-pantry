@@ -1,41 +1,31 @@
 import React, { useState, useEffect } from "react";
-import { Button, TextField, List, ListItem, ListItemText, IconButton, Paper, Typography, MenuItem } from "@mui/material";
+import { Button, TextField, List, ListItem, ListItemText, IconButton, Paper, Typography, Grid, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-
-// Default measurements based on item name
-const defaultMeasurements = {
-  sugar: "grams",
-  milk: "liters",
-  flour: "grams",
-  rice: "grams",
-  water: "liters",
-};
 
 const Pantry = ({ updatePantryItems }) => {
   const [pantryInput, setPantryInput] = useState("");
-  const [pantryAmount, setPantryAmount] = useState("");
-  const [measurement, setMeasurement] = useState(""); // New state for measurement
+  const [amount, setAmount] = useState("");
+  const [measurement, setMeasurement] = useState(""); // Use a dropdown to select measurement
   const [pantryList, setPantryList] = useState([]);
 
   useEffect(() => {
-    // Fetch pantry items from the backend
+    // Fetch pantry items from the backend (replace with your actual API call)
     fetch("http://localhost:5000/pantry")
       .then((response) => response.json())
       .then((data) => {
         setPantryList(data || []);
-        updatePantryItems(data.map((item) => `${item.name} (${item.amount} ${item.measurement})`) || []);
+        updatePantryItems(data.map((item) => item.name) || []);
       })
       .catch((error) => console.error("Error fetching pantry items:", error));
   }, [updatePantryItems]);
 
   const handleAddItem = () => {
-    if (pantryInput.trim() && pantryAmount.trim()) {
-      const newItem = {
-        name: pantryInput.trim(),
-        amount: pantryAmount.trim(),
-        measurement: measurement.trim() || "units", // Use the provided measurement or default to "units"
-      };
-      // Send the new item to the backend
+    if (pantryInput.trim() && amount.trim() && measurement.trim()) {
+      const newItem = { name: pantryInput.trim(), amount: amount.trim(), measurement: measurement.trim() };
+
+      console.log("Adding item:", newItem); // Debug log to check the data being sent
+
+      // Send the new item to the backend (replace with your actual API call)
       fetch("http://localhost:5000/pantry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -43,40 +33,35 @@ const Pantry = ({ updatePantryItems }) => {
       })
         .then((response) => response.json())
         .then((addedItem) => {
+          console.log("Item successfully added:", addedItem); // Debug log success
           const updatedPantryList = [...pantryList, addedItem];
           setPantryList(updatedPantryList);
-          updatePantryItems(updatedPantryList.map((item) => `${item.name} (${item.amount} ${item.measurement})`));
+          updatePantryItems(updatedPantryList.map((item) => item.name));
         })
-        .catch((error) => console.error("Error adding pantry item:", error));
+        .catch((error) => {
+          console.error("Error adding pantry item:", error); // Debug log error
+        });
+
+      // Clear the form fields
       setPantryInput("");
-      setPantryAmount("");
-      setMeasurement(""); // Clear measurement input after adding
+      setAmount("");
+      setMeasurement("");
+    } else {
+      console.warn("Please fill in all fields before adding."); // Log a warning if any field is missing
     }
   };
 
   const handleRemoveItem = (itemToRemove) => {
-    // Remove the item from the backend
+    // Remove the item from the backend (replace with your actual API call)
     fetch(`http://localhost:5000/pantry/${itemToRemove.id}`, {
       method: "DELETE",
     })
       .then(() => {
         const updatedPantryList = pantryList.filter((item) => item.id !== itemToRemove.id);
         setPantryList(updatedPantryList);
-        updatePantryItems(updatedPantryList.map((item) => `${item.name} (${item.amount} ${item.measurement})`));
+        updatePantryItems(updatedPantryList.map((item) => item.name));
       })
       .catch((error) => console.error("Error removing pantry item:", error));
-  };
-
-  // Automatically update the measurement based on the item type
-  const handlePantryInputChange = (e) => {
-    const itemName = e.target.value.toLowerCase();
-    setPantryInput(e.target.value);
-    // Set default measurement if it matches a known item, otherwise clear it
-    if (defaultMeasurements[itemName]) {
-      setMeasurement(defaultMeasurements[itemName]);
-    } else {
-      setMeasurement("");
-    }
   };
 
   return (
@@ -84,41 +69,64 @@ const Pantry = ({ updatePantryItems }) => {
       <Typography variant="h5" gutterBottom>
         Pantry Management
       </Typography>
-      <div style={{ marginBottom: "20px" }}>
-        <TextField
-          label="Add item to pantry"
-          value={pantryInput}
-          onChange={handlePantryInputChange}
-          style={{ marginRight: "10px" }}
-        />
-        <TextField
-          label="Amount"
-          value={pantryAmount}
-          onChange={(e) => setPantryAmount(e.target.value)}
-          style={{ marginRight: "10px" }}
-        />
-        <TextField
-          label="Measurement"
-          value={measurement}
-          onChange={(e) => setMeasurement(e.target.value)}
-          style={{ marginRight: "10px" }}
-        />
-        <Button variant="contained" onClick={handleAddItem}>
-          Add
-        </Button>
-      </div>
 
-      <Typography variant="h6">Current Pantry Items</Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={4}>
+          <TextField
+            label="Add item to pantry"
+            value={pantryInput}
+            onChange={(e) => setPantryInput(e.target.value)}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="Amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={3}>
+          {/* Dropdown for measurement */}
+          <FormControl fullWidth>
+            <InputLabel>Measurement</InputLabel>
+            <Select
+              value={measurement}
+              onChange={(e) => setMeasurement(e.target.value)}
+              fullWidth
+            >
+              <MenuItem value="grams">grams</MenuItem>
+              <MenuItem value="units">units</MenuItem>
+              <MenuItem value="kg">kg</MenuItem>
+              <MenuItem value="liters">liters</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAddItem}
+            fullWidth
+            style={{ height: "100%" }}
+          >
+            Add
+          </Button>
+        </Grid>
+      </Grid>
+
+      <Typography variant="h6" style={{ marginTop: "20px" }}>
+        Current Pantry Items
+      </Typography>
+
       <List>
         {pantryList.map((item) => (
-          <ListItem
-            key={item.id}
-            secondaryAction={
-              <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveItem(item)}>
-                <DeleteIcon />
-              </IconButton>
-            }
-          >
+          <ListItem key={item.id} secondaryAction={
+            <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveItem(item)}>
+              <DeleteIcon />
+            </IconButton>
+          }>
             <ListItemText primary={`${item.name} (${item.amount} ${item.measurement})`} />
           </ListItem>
         ))}
