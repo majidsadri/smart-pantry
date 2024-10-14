@@ -4,12 +4,14 @@ import "./Pantry.css";
 
 const AddItem = ({ addItem }) => {
   const [itemName, setItemName] = useState("");
+  const [itemAmount, setItemAmount] = useState(""); // New state for amount
 
   const handleAdd = () => {
-    if (itemName.trim()) {
-      const newItem = { name: itemName, category: "Uncategorized" };
+    if (itemName.trim() && itemAmount.trim()) {
+      const newItem = { name: itemName, amount: itemAmount, category: "Uncategorized" };
       addItem(newItem);
       setItemName("");
+      setItemAmount(""); // Clear after adding
     }
   };
 
@@ -20,6 +22,13 @@ const AddItem = ({ addItem }) => {
         label="Add item to pantry"
         value={itemName}
         onChange={(e) => setItemName(e.target.value)}
+        style={{ marginRight: "10px" }}
+      />
+      <TextField
+        variant="outlined"
+        label="Amount"
+        value={itemAmount}
+        onChange={(e) => setItemAmount(e.target.value)}
         style={{ marginRight: "10px" }}
       />
       <Button variant="contained" color="primary" onClick={handleAdd}>

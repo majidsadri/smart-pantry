@@ -64,7 +64,7 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
         onClick={fetchSuggestions}
         style={{ marginBottom: "20px" }}
       >
-        Give me a recipe
+        Suggest me a recipe
       </Button>
 
       <Typography variant="h5" gutterBottom>

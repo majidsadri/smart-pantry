@@ -1,29 +1,34 @@
 {
   "pantry": [
     {
-      "id": "11eb",
-      "name": "salt",
-      "category": "Uncategorized"
+      "id": "1696",
+      "name": "Milk",
+      "amount": "1",
+      "measurement": "liters"
     },
     {
-      "id": "8dd1",
-      "name": "tomato",
-      "category": "Uncategorized"
+      "id": "97cd",
+      "name": "Beef",
+      "amount": "2",
+      "measurement": "units"
     },
     {
-      "id": "f65a",
-      "name": "chicken",
-      "category": "Uncategorized"
+      "id": "2598",
+      "name": "Salmon",
+      "amount": "1",
+      "measurement": "units"
     },
     {
-      "id": "4beb",
-      "name": "cucumber",
-      "category": "Uncategorized"
+      "id": "9a54",
+      "name": "Sugar",
+      "amount": "200",
+      "measurement": "grams"
     },
     {
-      "id": "ab26",
-      "name": "beef",
-      "category": "Uncategorized"
+      "id": "879d",
+      "name": "Salt",
+      "amount": "2",
+      "measurement": "units"
     }
   ],
   "recipes": [
