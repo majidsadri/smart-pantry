@@ -1,44 +1,38 @@
 {
   "pantry": [
     {
-      "id": "1696",
-      "name": "Milk",
+      "id": "281f",
+      "name": "bean",
+      "amount": "2",
+      "measurement": "kg"
+    },
+    {
+      "id": "ce70",
+      "name": "noodle",
+      "amount": "2",
+      "measurement": "kg"
+    },
+    {
+      "id": "aad6",
+      "name": "vegetables",
       "amount": "1",
-      "measurement": "liters"
+      "measurement": "kg"
     },
     {
-      "id": "97cd",
-      "name": "Beef",
-      "amount": "2",
+      "id": "8015",
+      "name": "tomato",
+      "amount": "4",
       "measurement": "units"
     },
     {
-      "id": "6f55",
-      "name": "Oranges",
+      "id": "6a4f",
+      "name": "salmon",
       "amount": "3",
-      "measurement": "units"
+      "measurement": "kg"
     },
     {
-      "id": "c5d0",
-      "name": "Lentil",
-      "amount": "2",
-      "measurement": "Unit"
-    },
-    {
-      "id": "f1cf",
-      "name": "Salt",
-      "amount": "2",
-      "measurement": "grams"
-    },
-    {
-      "id": "e3a5",
-      "name": "bread",
-      "amount": "2",
-      "measurement": "units"
-    },
-    {
-      "id": "08e8",
-      "name": "flour",
+      "id": "67ae",
+      "name": "lentil",
       "amount": "2",
       "measurement": "kg"
     }

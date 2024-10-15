@@ -18,29 +18,15 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
         pantry: pantryItems,
         diet: dietPreferences.diet,
         restrictions: dietPreferences.restrictions,
+        usualMeals: dietPreferences.usualMeals,
       }),
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.suggestions && data.suggestions.length > 0) {
-          const filteredRecipes = data.suggestions.filter((recipe) => {
-            if (dietPreferences.diet === "Vegan") {
-              return (
-                !recipe.title.toLowerCase().includes("salmon") &&
-                !recipe.title.toLowerCase().includes("meat") &&
-                !recipe.title.toLowerCase().includes("cheese")
-              );
-            }
-            if (dietPreferences.diet === "Keto") {
-              // Add filtering logic for Keto if needed
-              return true;
-            }
-            return true; // Allow all recipes if no specific diet restriction
-          });
-
           setRecipes(
-            filteredRecipes.length > 0
-              ? filteredRecipes
+            data.suggestions.length > 0
+              ? data.suggestions
               : [{ title: "No recipe suggestions available", instructions: "" }]
           );
           setCurrentRecipeIndex(0); // Show the first recipe

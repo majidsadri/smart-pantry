@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -22,16 +22,32 @@ function App() {
   const [dietPreferences, setDietPreferences] = useState({
     diet: "None",
     restrictions: "",
+    usualMeals: "",
   });
+  
   const [menuAnchor, setMenuAnchor] = useState(null);
-  const [currentPage, setCurrentPage] = useState("Landing Page"); // Default to the landing page
+  const [currentPage, setCurrentPage] = useState("Landing Page");
+
+  useEffect(() => {
+    // Fetch profile data from the backend when the app loads
+    fetch('http://127.0.0.1:5001/get_profile')
+      .then(response => response.json())
+      .then(data => {
+        setDietPreferences({
+          diet: data.diet,
+          restrictions: data.restrictions,
+          usualMeals: data.usualMeals,
+        });
+      })
+      .catch(error => console.error("Error fetching profile:", error));
+  }, []);
 
   const updatePantryItems = (items) => {
     setPantryItems(items);
   };
 
-  const updateDietPreferences = (diet, restrictions) => {
-    setDietPreferences({ diet, restrictions });
+  const updateDietPreferences = (diet, restrictions, usualMeals) => {
+    setDietPreferences({ diet, restrictions, usualMeals });
   };
 
   const handleMenuOpen = (event) => {
@@ -44,27 +60,20 @@ function App() {
 
   const handleNavigation = (page) => {
     setCurrentPage(page);
-    setMenuAnchor(null); // Close the menu after selecting an option
+    setMenuAnchor(null);
   };
 
-  // Make the logo clickable to go to the landing page
   const handleLogoClick = () => {
     setCurrentPage("Landing Page");
   };
 
-  // Render components based on the current page
   const renderCurrentPage = () => {
     switch (currentPage) {
       case "Profile":
         return <Profile updateDietPreferences={updateDietPreferences} />;
       case "Shopping List":
-        return (
-          <ShoppingList
-            pantryItems={pantryItems}
-            dietPreferences={dietPreferences}
-          />
-        );
-      case "Landing Page": // Display both Pantry Management and Recipe Suggestions on landing page
+        return <ShoppingList pantryItems={pantryItems} dietPreferences={dietPreferences} />;
+      case "Landing Page":
         return (
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
@@ -80,10 +89,7 @@ function App() {
                 <Typography variant="h5" align="left" gutterBottom>
                   Recipe Suggestions
                 </Typography>
-                <RecipeSuggestions
-                  pantryItems={pantryItems}
-                  dietPreferences={dietPreferences}
-                />
+                <RecipeSuggestions pantryItems={pantryItems} dietPreferences={dietPreferences} />
               </Paper>
             </Grid>
           </Grid>
@@ -95,16 +101,10 @@ function App() {
 
   return (
     <Container maxWidth="lg" className="Container">
-      {/* AppBar for main menu */}
       <AppBar position="static" color="primary">
         <Toolbar>
-          {/* Make the logo clickable */}
           <Button onClick={handleLogoClick} style={{ padding: 0, marginRight: "10px" }}>
-            <img
-              src={pantryLogo}
-              alt="Pantry Logo"
-              style={{ width: "50px", height: "50px", marginRight: "10px" }}
-            />
+            <img src={pantryLogo} alt="Pantry Logo" style={{ width: "50px", height: "50px", marginRight: "10px" }} />
           </Button>
           <Typography variant="h6" style={{ flexGrow: 1 }}>
             Smart Pantry Manager
@@ -112,17 +112,13 @@ function App() {
           <Button color="inherit" onClick={handleMenuOpen} style={{ marginRight: "10px" }}>
             Menu
           </Button>
-          {/* Dropdown menu */}
           <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleMenuClose}>
             <MenuItem onClick={() => handleNavigation("Profile")}>Profile</MenuItem>
-            <MenuItem onClick={() => handleNavigation("Shopping List")}>
-              Shopping List
-            </MenuItem>
+            <MenuItem onClick={() => handleNavigation("Shopping List")}>Shopping List</MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
 
-      {/* Render the current page */}
       <Grid container spacing={3} style={{ marginTop: "20px" }}>
         <Grid item xs={12}>
           <Paper elevation={3} style={{ padding: "20px", minHeight: "300px" }}>

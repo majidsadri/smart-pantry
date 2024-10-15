@@ -8,17 +8,19 @@ const Profile = ({ updateDietPreferences }) => {
   const [diet, setDiet] = useState("None");
   const [restrictions, setRestrictions] = useState("");
   const [cookDays, setCookDays] = useState(0);
-  const [usualMeals, setUsualMeals] = useState(""); // New state for usual meals
+  const [usualMeals, setUsualMeals] = useState(""); // State for usual meals
 
-  // Load saved profile from local storage (if available)
+  // Fetch saved profile data from the backend on mount
   useEffect(() => {
-    const savedPreferences = JSON.parse(localStorage.getItem("dietPreferences"));
-    if (savedPreferences) {
-      setDiet(savedPreferences.diet);
-      setRestrictions(savedPreferences.restrictions);
-      setUsualMeals(savedPreferences.usualMeals); // Load usual meals from saved preferences
-    }
-  }, []); // Only run this effect once on mount
+    fetch('http://127.0.0.1:5001/get_profile')
+      .then(response => response.json())
+      .then(data => {
+        setDiet(data.diet);
+        setRestrictions(data.restrictions);
+        setUsualMeals(data.usualMeals);
+      })
+      .catch(error => console.error("Error fetching profile:", error));
+  }, []);
 
   const handleProfileSubmit = () => {
     const profileData = {
@@ -27,19 +29,23 @@ const Profile = ({ updateDietPreferences }) => {
       cookDays,
       diet,
       restrictions,
-      usualMeals, // Save the usual meals in profile data
+      usualMeals,
     };
 
-    // Save to local storage
-    localStorage.setItem(
-      "dietPreferences",
-      JSON.stringify({ diet, restrictions, usualMeals })
-    );
-
-    // Call the parent function to update the preferences globally
-    updateDietPreferences(diet, restrictions);
-
-    console.log(profileData); // You can store or use this data as needed.
+    // Save the profile data to the backend
+    fetch('http://127.0.0.1:5001/save_profile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(profileData),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Profile saved:", data);
+        updateDietPreferences(diet, restrictions, usualMeals);
+      })
+      .catch(error => console.error("Error saving profile:", error));
   };
 
   return (
@@ -112,7 +118,6 @@ const Profile = ({ updateDietPreferences }) => {
           />
         </Grid>
 
-        {/* New Question for Usual Meals */}
         <Grid item xs={12}>
           <Typography variant="h6" gutterBottom>
             Usual Meals
@@ -126,13 +131,10 @@ const Profile = ({ updateDietPreferences }) => {
           >
             <MenuItem value="Steaks">Steaks</MenuItem>
             <MenuItem value="Salads">Salads</MenuItem>
-            <MenuItem value="Salad and Protein">Salad and Protein</MenuItem>
-            <MenuItem value="Indian Traditional">Indian Traditional</MenuItem>
             <MenuItem value="Persian">Persian</MenuItem>
             <MenuItem value="Chinese">Chinese</MenuItem>
             <MenuItem value="Fish and Seafood">Fish and Seafood</MenuItem>
             <MenuItem value="Fast Food">Fast Food</MenuItem>
-            <MenuItem value="Other">Other</MenuItem>
           </TextField>
         </Grid>
 

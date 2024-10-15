@@ -10,7 +10,7 @@ const Pantry = ({ updatePantryItems }) => {
 
   useEffect(() => {
     // Fetch pantry items from the backend (replace with your actual API call)
-    fetch("http://localhost:5000/pantry")
+    fetch("http://localhost:5001/pantry")
       .then((response) => response.json())
       .then((data) => {
         setPantryList(data || []);
@@ -26,7 +26,7 @@ const Pantry = ({ updatePantryItems }) => {
       console.log("Adding item:", newItem); // Debug log to check the data being sent
 
       // Send the new item to the backend (replace with your actual API call)
-      fetch("http://localhost:5000/pantry", {
+      fetch("http://localhost:5001/pantry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newItem),
@@ -53,7 +53,7 @@ const Pantry = ({ updatePantryItems }) => {
 
   const handleRemoveItem = (itemToRemove) => {
     // Remove the item from the backend (replace with your actual API call)
-    fetch(`http://localhost:5000/pantry/${itemToRemove.id}`, {
+    fetch(`http://localhost:5001/pantry/${itemToRemove.id}`, {
       method: "DELETE",
     })
       .then(() => {
