@@ -93,10 +93,13 @@ def recommend():
     if usual_meals and usual_meals.lower() != "none":
         prompt += f" The recipes should focus on {usual_meals} meals."
 
+    # Request for cooking time and calorie estimation
     prompt += """
     Provide each recipe in the following format:
     Title: Recipe Name
     Instructions: Step-by-step instructions.
+    Cooking Time: Estimated cooking time in minutes.
+    Calories: Estimated calories per serving.
     """
 
     # Log the constructed prompt for debugging
@@ -127,15 +130,20 @@ def recommend():
             if line.startswith("Title:"):
                 if current_recipe["title"]:  # If a recipe is already populated, append it to final_recipes
                     final_recipes.append(current_recipe)
-                current_recipe = {"title": line.replace("Title:", "").strip(), "instructions": ""}
+                current_recipe = {"title": line.replace("Title:", "").strip(), "instructions": "", "cooking_time": "", "calories": ""}
             elif line.startswith("Instructions:"):
                 current_recipe["instructions"] = line.replace("Instructions:", "").strip()
+            elif line.startswith("Cooking Time:"):
+                current_recipe["cooking_time"] = line.replace("Cooking Time:", "").strip()
+            elif line.startswith("Calories:"):
+                current_recipe["calories"] = line.replace("Calories:", "").strip()
             else:
                 current_recipe["instructions"] += " " + line.strip()  # Append additional lines to the instructions
 
         # Add the last recipe
         if current_recipe["title"]:
             final_recipes.append(current_recipe)
+
 
         # If usual_meals is "Persian", translate the instructions
         if usual_meals.lower() == "persian":

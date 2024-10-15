@@ -1,16 +1,35 @@
 import React, { useState, useEffect } from "react";
-import { Button, TextField, List, ListItem, ListItemText, IconButton, Paper, Typography, Grid, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import {
+  Button,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
+  Paper,
+  Typography,
+  Grid,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import axios from "axios"; // Import axios for making HTTP requests
 
 const Pantry = ({ updatePantryItems }) => {
   const [pantryInput, setPantryInput] = useState("");
   const [amount, setAmount] = useState("");
-  const [measurement, setMeasurement] = useState(""); // Use a dropdown to select measurement
+  const [measurement, setMeasurement] = useState("");
   const [pantryList, setPantryList] = useState([]);
+  const [images, setImages] = useState([]); // State to hold fetched images
+  const [selectedImage, setSelectedImage] = useState(""); // State to hold selected image
+
+  const API_KEY = 'CqDXEkdz6MLbZaaVCye7GioUsuRrVaG2ATmIFeNHX3EF2o4gbpOPERao';
 
   useEffect(() => {
-    // Fetch pantry items from the backend (replace with your actual API call)
-    fetch("http://localhost:5001/pantry")
+    // Fetch pantry items from the backend
+    fetch("http://localhost:5000/pantry")
       .then((response) => response.json())
       .then((data) => {
         setPantryList(data || []);
@@ -19,41 +38,58 @@ const Pantry = ({ updatePantryItems }) => {
       .catch((error) => console.error("Error fetching pantry items:", error));
   }, [updatePantryItems]);
 
+  const fetchImages = async (query) => {
+    const url = `https://api.pexels.com/v1/search?query=${query}&per_page=5`;
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: API_KEY,
+        },
+      });
+      setImages(response.data.photos); // Set the fetched images in state
+    } catch (error) {
+      console.error("Error fetching images:", error);
+    }
+  };
+
   const handleAddItem = () => {
     if (pantryInput.trim() && amount.trim() && measurement.trim()) {
-      const newItem = { name: pantryInput.trim(), amount: amount.trim(), measurement: measurement.trim() };
+      const newItem = {
+        name: pantryInput.trim(),
+        amount: amount.trim(),
+        measurement: measurement.trim(),
+        image: selectedImage, // Include selected image URL
+      };
 
-      console.log("Adding item:", newItem); // Debug log to check the data being sent
-
-      // Send the new item to the backend (replace with your actual API call)
-      fetch("http://localhost:5001/pantry", {
+      // Send the new item to the backend
+      fetch("http://localhost:5000/pantry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newItem),
       })
         .then((response) => response.json())
         .then((addedItem) => {
-          console.log("Item successfully added:", addedItem); // Debug log success
           const updatedPantryList = [...pantryList, addedItem];
           setPantryList(updatedPantryList);
           updatePantryItems(updatedPantryList.map((item) => item.name));
         })
         .catch((error) => {
-          console.error("Error adding pantry item:", error); // Debug log error
+          console.error("Error adding pantry item:", error);
         });
 
       // Clear the form fields
       setPantryInput("");
       setAmount("");
       setMeasurement("");
+      setSelectedImage(""); // Clear the selected image
+      setImages([]); // Clear the images
     } else {
-      console.warn("Please fill in all fields before adding."); // Log a warning if any field is missing
+      console.warn("Please fill in all fields before adding.");
     }
   };
 
   const handleRemoveItem = (itemToRemove) => {
-    // Remove the item from the backend (replace with your actual API call)
-    fetch(`http://localhost:5001/pantry/${itemToRemove.id}`, {
+    fetch(`http://localhost:5000/pantry/${itemToRemove.id}`, {
       method: "DELETE",
     })
       .then(() => {
@@ -75,7 +111,10 @@ const Pantry = ({ updatePantryItems }) => {
           <TextField
             label="Add item to pantry"
             value={pantryInput}
-            onChange={(e) => setPantryInput(e.target.value)}
+            onChange={(e) => {
+              setPantryInput(e.target.value);
+              fetchImages(e.target.value); // Fetch images when input changes
+            }}
             fullWidth
           />
         </Grid>
@@ -88,7 +127,6 @@ const Pantry = ({ updatePantryItems }) => {
           />
         </Grid>
         <Grid item xs={3}>
-          {/* Dropdown for measurement */}
           <FormControl fullWidth>
             <InputLabel>Measurement</InputLabel>
             <Select
@@ -127,10 +165,34 @@ const Pantry = ({ updatePantryItems }) => {
               <DeleteIcon />
             </IconButton>
           }>
+            {item.image ? (
+              <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px', marginRight: '10px' }} />
+            ) : (
+              <div style={{ width: '50px', height: '50px', marginRight: '10px', backgroundColor: '#eee' }} />
+            )}
             <ListItemText primary={`${item.name} (${item.amount} ${item.measurement})`} />
           </ListItem>
         ))}
       </List>
+
+      {/* Display images fetched from Pexels */}
+      {images.length > 0 && (
+        <div style={{ marginTop: '20px' }}>
+          <Typography variant="h6">Select an Image</Typography>
+          <Grid container spacing={1}>
+            {images.map((image) => (
+              <Grid item xs={2} key={image.id}>
+                <img
+                  src={image.src.medium}
+                  alt={image.alt}
+                  style={{ width: '100%', cursor: 'pointer' }}
+                  onClick={() => setSelectedImage(image.src.medium)} // Set selected image
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </div>
+      )}
     </Paper>
   );
 };

@@ -88,12 +88,20 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
           {recipes[currentRecipeIndex] && (
             <>
               <Typography variant="h6" style={{ fontWeight: "bold", color: "#3f51b5" }}>
-                {recipes[currentRecipeIndex].title}
+                  {recipes[currentRecipeIndex].title}
               </Typography>
               <Typography variant="body1" style={{ whiteSpace: "pre-line", marginTop: "10px" }}>
-                {recipes[currentRecipeIndex].instructions}
+                  {recipes[currentRecipeIndex].instructions}
               </Typography>
-            </>
+              <Typography variant="body2" style={{ marginTop: "10px", fontWeight: "bold", color: "#3f51b5" }}>
+                  Cooking Time: {recipes[currentRecipeIndex].cooking_time} minutes
+              </Typography>
+              <Typography variant="body2" style={{ fontWeight: "bold", color: "#3f51b5" }}>
+                  Calories: {recipes[currentRecipeIndex].calories} per serving
+              </Typography>
+          </>
+
+
           )}
           <div style={{ marginTop: "20px" }}>
             <Button variant="contained" color="primary" onClick={handleLike}>
