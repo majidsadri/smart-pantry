@@ -21,6 +21,7 @@ const Pantry = ({ updatePantryItems }) => {
   const [pantryInput, setPantryInput] = useState("");
   const [amount, setAmount] = useState("");
   const [measurement, setMeasurement] = useState("");
+  const [purchaseDate, setPurchaseDate] = useState(""); // State for purchase date
   const [pantryList, setPantryList] = useState([]);
   const [images, setImages] = useState([]); // State to hold fetched images
   const [selectedImage, setSelectedImage] = useState(""); // State to hold selected image
@@ -59,6 +60,7 @@ const Pantry = ({ updatePantryItems }) => {
         amount: amount.trim(),
         measurement: measurement.trim(),
         image: selectedImage, // Include selected image URL
+        purchaseDate, // Include purchase date
       };
 
       // Send the new item to the backend
@@ -83,6 +85,7 @@ const Pantry = ({ updatePantryItems }) => {
       setMeasurement("");
       setSelectedImage(""); // Clear the selected image
       setImages([]); // Clear the images
+      setPurchaseDate(""); // Clear the purchase date
     } else {
       console.warn("Please fill in all fields before adding.");
     }
@@ -118,7 +121,7 @@ const Pantry = ({ updatePantryItems }) => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={2}>
           <TextField
             label="Amount"
             value={amount}
@@ -126,7 +129,7 @@ const Pantry = ({ updatePantryItems }) => {
             fullWidth
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={2}>
           <FormControl fullWidth>
             <InputLabel>Measurement</InputLabel>
             <Select
@@ -140,6 +143,18 @@ const Pantry = ({ updatePantryItems }) => {
               <MenuItem value="liters">liters</MenuItem>
             </Select>
           </FormControl>
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            label="Purchase Date (optional)"
+            type="date"
+            value={purchaseDate}
+            onChange={(e) => setPurchaseDate(e.target.value)}
+            fullWidth
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
         </Grid>
         <Grid item xs={2}>
           <Button
@@ -170,7 +185,7 @@ const Pantry = ({ updatePantryItems }) => {
             ) : (
               <div style={{ width: '50px', height: '50px', marginRight: '10px', backgroundColor: '#eee' }} />
             )}
-            <ListItemText primary={`${item.name} (${item.amount} ${item.measurement})`} />
+            <ListItemText primary={`${item.name} (${item.amount} ${item.measurement})`} secondary={item.purchaseDate ? `Purchased on: ${item.purchaseDate}` : ""} />
           </ListItem>
         ))}
       </List>
@@ -185,7 +200,7 @@ const Pantry = ({ updatePantryItems }) => {
                 <img
                   src={image.src.medium}
                   alt={image.alt}
-                  style={{ width: '100%', cursor: 'pointer' }}
+                  style={{ width: '100%', cursor: 'pointer', border: selectedImage === image.src.medium ? '2px solid blue' : 'none' }}
                   onClick={() => setSelectedImage(image.src.medium)} // Set selected image
                 />
               </Grid>

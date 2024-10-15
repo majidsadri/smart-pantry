@@ -71,13 +71,17 @@ def translate_to_persian(text):
         return "Error in translation."
 
 # Endpoint to generate recipe suggestions based on the user's pantry and preferences
+# Endpoint to generate recipe suggestions based on the user's pantry and preferences
 @app.route('/recommend', methods=['POST'])
 def recommend():
     pantry_items = request.json.get('pantry', [])
     profile_data = load_profile_data()
 
+    # Extract the names of the pantry items
+    pantry_item_names = [item['name'] if isinstance(item, dict) else item for item in pantry_items]
+
     # Handle case where no pantry items are provided
-    if not pantry_items:
+    if not pantry_item_names:
         return jsonify({"suggestions": [{"title": "No pantry items provided", "instructions": "Please provide pantry items to generate recipes."}]})
 
     diet = profile_data.get('diet', 'None')
@@ -85,7 +89,7 @@ def recommend():
     usual_meals = profile_data.get('usualMeals', '')
 
     # Construct the prompt for OpenAI GPT-3.5
-    prompt = f"Based on the following pantry items: {', '.join(pantry_items)}, suggest 10 simple and unique recipes."
+    prompt = f"Based on the following pantry items: {', '.join(pantry_item_names)}, suggest 10 simple and unique recipes."
     if diet and diet.lower() != "none":
         prompt += f" The recipes should be suitable for a {diet} diet."
     if restrictions:
@@ -93,7 +97,6 @@ def recommend():
     if usual_meals and usual_meals.lower() != "none":
         prompt += f" The recipes should focus on {usual_meals} meals."
 
-    # Request for cooking time and calorie estimation
     prompt += """
     Provide each recipe in the following format:
     Title: Recipe Name
@@ -124,7 +127,7 @@ def recommend():
         # Process the response into a list of recipes
         recipe_list = suggestions.split("\n")
         final_recipes = []
-        current_recipe = {"title": "", "instructions": ""}
+        current_recipe = {"title": "", "instructions": "", "cooking_time": "", "calories": ""}
 
         for line in recipe_list:
             if line.startswith("Title:"):
@@ -144,25 +147,22 @@ def recommend():
         if current_recipe["title"]:
             final_recipes.append(current_recipe)
 
-
-        # If usual_meals is "Persian", translate the instructions
-        if usual_meals.lower() == "persian":
-            for recipe in final_recipes:
-                persian_translation = translate_to_persian(recipe['instructions'])
-                recipe['instructions'] += f"\n\n**Persian Translation:**\n{persian_translation}"
-
         if len(final_recipes) > 0:
             return jsonify({"suggestions": final_recipes})
         else:
             return jsonify({"suggestions": [{"title": "No recipes available", "instructions": "Sorry, we couldn't generate recipes based on the current inputs."}]})
-    
+
     except openai.error.OpenAIError as e:
         logging.error(f"OpenAI API error: {e}")
         return jsonify({"suggestions": [{"title": "Error", "instructions": "There was an error generating the suggestions."}]})
-    
+
     except Exception as e:
         logging.error(f"General error: {e}")
         return jsonify({"suggestions": [{"title": "Error", "instructions": "Error generating suggestions."}]})
 
+
+
+
 if __name__ == '__main__':
     app.run(port=5001, debug=True)
+

@@ -1,60 +1,68 @@
 {
   "pantry": [
     {
-      "id": "df7b",
+      "id": "0b8b",
       "name": "apple",
-      "amount": "2",
+      "amount": "4",
       "measurement": "units",
-      "image": "https://images.pexels.com/photos/206959/pexels-photo-206959.jpeg?auto=compress&cs=tinysrgb&h=350"
+      "image": "https://images.pexels.com/photos/102104/pexels-photo-102104.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-11"
     },
     {
-      "id": "c64a",
+      "id": "a913",
       "name": "lentil",
-      "amount": "2",
+      "amount": "3",
       "measurement": "kg",
-      "image": "https://images.pexels.com/photos/6086414/pexels-photo-6086414.jpeg?auto=compress&cs=tinysrgb&h=350"
+      "image": "https://images.pexels.com/photos/6086414/pexels-photo-6086414.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-09-11"
     },
     {
-      "id": "9837",
+      "id": "cad2",
       "name": "salmon",
       "amount": "2",
       "measurement": "kg",
-      "image": "https://images.pexels.com/photos/842142/pexels-photo-842142.jpeg?auto=compress&cs=tinysrgb&h=350"
+      "image": "https://images.pexels.com/photos/1683545/pexels-photo-1683545.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-11"
     },
     {
-      "id": "5bab",
+      "id": "c5ad",
+      "name": "rice",
+      "amount": "4",
+      "measurement": "kg",
+      "image": "https://images.pexels.com/photos/4110251/pexels-photo-4110251.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-07-24"
+    },
+    {
+      "id": "cbf1",
       "name": "salt",
-      "amount": "1",
+      "amount": "2",
       "measurement": "units",
-      "image": "https://images.pexels.com/photos/2320244/pexels-photo-2320244.jpeg?auto=compress&cs=tinysrgb&h=350"
+      "image": "https://images.pexels.com/photos/1263313/pexels-photo-1263313.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-02-14"
     },
     {
-      "id": "f610",
+      "id": "77dd",
+      "name": "bean",
+      "amount": "3",
+      "measurement": "kg",
+      "image": "https://images.pexels.com/photos/176169/pexels-photo-176169.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-08-14"
+    },
+    {
+      "id": "3846",
+      "name": "spinach",
+      "amount": "2",
+      "measurement": "kg",
+      "image": "https://images.pexels.com/photos/1351238/pexels-photo-1351238.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-11"
+    },
+    {
+      "id": "b519",
       "name": "noodle",
       "amount": "2",
       "measurement": "kg",
-      "image": "https://images.pexels.com/photos/28895983/pexels-photo-28895983.jpeg?auto=compress&cs=tinysrgb&h=350"
-    },
-    {
-      "id": "eddb",
-      "name": "vegetable",
-      "amount": "2",
-      "measurement": "units",
-      "image": "https://images.pexels.com/photos/1367243/pexels-photo-1367243.jpeg?auto=compress&cs=tinysrgb&h=350"
-    },
-    {
-      "id": "8dd9",
-      "name": "tomato",
-      "amount": "3",
-      "measurement": "kg",
-      "image": "https://images.pexels.com/photos/96616/pexels-photo-96616.jpeg?auto=compress&cs=tinysrgb&h=350"
-    },
-    {
-      "id": "0550",
-      "name": "cucumber",
-      "amount": "2",
-      "measurement": "units",
-      "image": "https://images.pexels.com/photos/3568039/pexels-photo-3568039.jpeg?auto=compress&cs=tinysrgb&h=350"
+      "image": "https://images.pexels.com/photos/1395319/pexels-photo-1395319.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-09-10"
     }
   ],
   "recipes": [
