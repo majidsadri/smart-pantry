@@ -131,12 +131,13 @@ const Profile = ({ updateDietPreferences }) => {
           >
             <MenuItem value="Steaks">Steaks</MenuItem>
             <MenuItem value="Salads">Salads</MenuItem>
+            <MenuItem value="Regular">Regular</MenuItem> {/* Add this MenuItem correctly */}
             <MenuItem value="Persian">Persian</MenuItem>
             <MenuItem value="Chinese">Chinese</MenuItem>
             <MenuItem value="Fish and Seafood">Fish and Seafood</MenuItem>
-            <MenuItem value="Fast Food">Fast Food</MenuItem>
           </TextField>
         </Grid>
+
 
         <Grid item xs={12}>
           <Button variant="contained" color="primary" onClick={handleProfileSubmit}>

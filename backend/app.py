@@ -14,6 +14,9 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # Path to the JSON file where profile data will be stored
 PROFILE_FILE_PATH = 'profile_data.json'
 
+# Enable logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 # Function to save profile data to the JSON file
 def save_profile_data(profile_data):
     try:
@@ -47,11 +50,35 @@ def get_profile():
     profile_data = load_profile_data()
     return jsonify(profile_data), 200
 
+# Function to translate the instructions to Persian using GPT
+def translate_to_persian(text):
+    translation_prompt = f"Please translate the following text into Persian:\n{text}"
+    logging.info(f"Translation Prompt: {translation_prompt}")
+    
+    try:
+        translation_response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a translator."},
+                {"role": "user", "content": translation_prompt}
+            ]
+        )
+        persian_translation = translation_response.choices[0].message['content'].strip()
+        logging.info(f"Persian Translation: {persian_translation}")
+        return persian_translation
+    except Exception as e:
+        logging.error(f"Error translating to Persian: {e}")
+        return "Error in translation."
+
 # Endpoint to generate recipe suggestions based on the user's pantry and preferences
 @app.route('/recommend', methods=['POST'])
 def recommend():
     pantry_items = request.json.get('pantry', [])
     profile_data = load_profile_data()
+
+    # Handle case where no pantry items are provided
+    if not pantry_items:
+        return jsonify({"suggestions": [{"title": "No pantry items provided", "instructions": "Please provide pantry items to generate recipes."}]})
 
     diet = profile_data.get('diet', 'None')
     restrictions = profile_data.get('restrictions', '')
@@ -72,6 +99,7 @@ def recommend():
     Instructions: Step-by-step instructions.
     """
 
+    # Log the constructed prompt for debugging
     logging.info(f"GPT Prompt: {prompt}")
 
     try:
@@ -86,6 +114,9 @@ def recommend():
 
         # Extract the suggestions from the API response
         suggestions = response.choices[0].message['content']
+
+        # Log the full response for debugging
+        logging.info(f"GPT Response: {suggestions}")
 
         # Process the response into a list of recipes
         recipe_list = suggestions.split("\n")
@@ -106,13 +137,23 @@ def recommend():
         if current_recipe["title"]:
             final_recipes.append(current_recipe)
 
+        # If usual_meals is "Persian", translate the instructions
+        if usual_meals.lower() == "persian":
+            for recipe in final_recipes:
+                persian_translation = translate_to_persian(recipe['instructions'])
+                recipe['instructions'] += f"\n\n**Persian Translation:**\n{persian_translation}"
+
         if len(final_recipes) > 0:
             return jsonify({"suggestions": final_recipes})
         else:
             return jsonify({"suggestions": [{"title": "No recipes available", "instructions": "Sorry, we couldn't generate recipes based on the current inputs."}]})
     
+    except openai.error.OpenAIError as e:
+        logging.error(f"OpenAI API error: {e}")
+        return jsonify({"suggestions": [{"title": "Error", "instructions": "There was an error generating the suggestions."}]})
+    
     except Exception as e:
-        logging.error(f"Error generating suggestions: {e}")
+        logging.error(f"General error: {e}")
         return jsonify({"suggestions": [{"title": "Error", "instructions": "Error generating suggestions."}]})
 
 if __name__ == '__main__':
