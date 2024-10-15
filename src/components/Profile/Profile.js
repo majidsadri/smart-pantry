@@ -15,13 +15,14 @@ const Profile = ({ updateDietPreferences }) => {
     fetch('http://127.0.0.1:5001/get_profile')
       .then(response => response.json())
       .then(data => {
-        setDiet(data.diet);
-        setRestrictions(data.restrictions);
-        setUsualMeals(data.usualMeals);
+        console.log("Fetched profile data:", data); // Log the data for debugging
+        setDiet(data.diet || "None");
+        setRestrictions(data.restrictions || "");
+        setUsualMeals(data.usualMeals || "Regular");
       })
       .catch(error => console.error("Error fetching profile:", error));
-  }, []);
-
+  }, []);  
+  
   const handleProfileSubmit = () => {
     const profileData = {
       purpose,

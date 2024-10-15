@@ -16,7 +16,7 @@ The Smart Pantry Manager provides users with a streamlined way to manage their p
 
 npm install @mui/icons-material
 
-npm install @mui/material @emotion/react @emotion/styled axios
+npm install @mui/material @emotion/react @emotion/styled axios date-fns
 
 npm install json-server --save-dev
 

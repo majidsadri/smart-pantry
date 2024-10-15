@@ -44,6 +44,36 @@ def save_profile():
     else:
         return jsonify({"status": "Error saving profile."}), 500
 
+
+@app.route('/get_tip', methods=['GET'])
+def get_tip():
+    try:
+        # Call OpenAI's GPT-3.5 to get a cooking tip
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that provides cooking tips."},
+                {"role": "user", "content": "Please provide a short and practical cooking tip."}
+            ]
+        )
+        
+        # Extract the tip from the API response
+        tip = response.choices[0].message['content'].strip()
+        
+        # Log the tip for debugging
+        logging.info(f"Generated cooking tip: {tip}")
+        
+        return jsonify({"tip": tip}), 200
+
+    except openai.error.OpenAIError as e:
+        logging.error(f"OpenAI API error: {e}")
+        return jsonify({"tip": "Couldn't fetch a tip at this time, please try again later."}), 500
+
+    except Exception as e:
+        logging.error(f"General error: {e}")
+        return jsonify({"tip": "Error generating a cooking tip."}), 500
+
+
 # Endpoint to get profile information
 @app.route('/get_profile', methods=['GET'])
 def get_profile():

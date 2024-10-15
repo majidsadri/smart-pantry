@@ -15,16 +15,17 @@ import {
   InputLabel,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import axios from "axios"; // Import axios for making HTTP requests
+import axios from "axios";
+import { differenceInDays } from "date-fns";
 
-const Pantry = ({ updatePantryItems }) => {
+const Pantry = ({ updatePantryItems, addToShoppingList }) => {
   const [pantryInput, setPantryInput] = useState("");
   const [amount, setAmount] = useState("");
   const [measurement, setMeasurement] = useState("");
-  const [purchaseDate, setPurchaseDate] = useState(""); // State for purchase date
+  const [purchaseDate, setPurchaseDate] = useState("");
   const [pantryList, setPantryList] = useState([]);
-  const [images, setImages] = useState([]); // State to hold fetched images
-  const [selectedImage, setSelectedImage] = useState(""); // State to hold selected image
+  const [images, setImages] = useState([]);
+  const [selectedImage, setSelectedImage] = useState("");
 
   const API_KEY = 'CqDXEkdz6MLbZaaVCye7GioUsuRrVaG2ATmIFeNHX3EF2o4gbpOPERao';
 
@@ -33,8 +34,12 @@ const Pantry = ({ updatePantryItems }) => {
     fetch("http://localhost:5000/pantry")
       .then((response) => response.json())
       .then((data) => {
-        setPantryList(data || []);
-        updatePantryItems(data.map((item) => item.name) || []);
+        const updatedData = data.map((item) => ({
+          ...item,
+          expired: isAboutToExpire(item) ? "yes" : "no",
+        }));
+        setPantryList(updatedData);
+        updatePantryItems(updatedData.map((item) => item.name) || []);
       })
       .catch((error) => console.error("Error fetching pantry items:", error));
   }, [updatePantryItems]);
@@ -47,10 +52,36 @@ const Pantry = ({ updatePantryItems }) => {
           Authorization: API_KEY,
         },
       });
-      setImages(response.data.photos); // Set the fetched images in state
+      setImages(response.data.photos);
     } catch (error) {
       console.error("Error fetching images:", error);
     }
+  };
+
+  const isAboutToExpire = (item) => {
+    if (!item.purchaseDate) return false;
+
+    const currentDate = new Date();
+    const purchaseDate = new Date(item.purchaseDate);
+    const daysDifference = differenceInDays(currentDate, purchaseDate);
+
+    // Determine expiration threshold based on item type
+    if (
+      ["fruit", "apple", "banana", "orange"].some((type) =>
+        item.name.toLowerCase().includes(type)
+      )
+    ) {
+      return daysDifference > 14;
+    } else if (item.name.toLowerCase().includes("meat")) {
+      return daysDifference > 90;
+    } else if (
+      ["lentil", "bean", "rice"].some((type) =>
+        item.name.toLowerCase().includes(type)
+      )
+    ) {
+      return daysDifference > 365;
+    }
+    return false;
   };
 
   const handleAddItem = () => {
@@ -59,8 +90,9 @@ const Pantry = ({ updatePantryItems }) => {
         name: pantryInput.trim(),
         amount: amount.trim(),
         measurement: measurement.trim(),
-        image: selectedImage, // Include selected image URL
-        purchaseDate, // Include purchase date
+        image: selectedImage,
+        purchaseDate,
+        expired: isAboutToExpire({ purchaseDate, name: pantryInput }) ? "yes" : "no",
       };
 
       // Send the new item to the backend
@@ -74,6 +106,9 @@ const Pantry = ({ updatePantryItems }) => {
           const updatedPantryList = [...pantryList, addedItem];
           setPantryList(updatedPantryList);
           updatePantryItems(updatedPantryList.map((item) => item.name));
+          if (isAboutToExpire(addedItem)) {
+            addToShoppingList(addedItem.name);
+          }
         })
         .catch((error) => {
           console.error("Error adding pantry item:", error);
@@ -83,9 +118,9 @@ const Pantry = ({ updatePantryItems }) => {
       setPantryInput("");
       setAmount("");
       setMeasurement("");
-      setSelectedImage(""); // Clear the selected image
-      setImages([]); // Clear the images
-      setPurchaseDate(""); // Clear the purchase date
+      setSelectedImage("");
+      setImages([]);
+      setPurchaseDate("");
     } else {
       console.warn("Please fill in all fields before adding.");
     }
@@ -96,7 +131,9 @@ const Pantry = ({ updatePantryItems }) => {
       method: "DELETE",
     })
       .then(() => {
-        const updatedPantryList = pantryList.filter((item) => item.id !== itemToRemove.id);
+        const updatedPantryList = pantryList.filter(
+          (item) => item.id !== itemToRemove.id
+        );
         setPantryList(updatedPantryList);
         updatePantryItems(updatedPantryList.map((item) => item.name));
       })
@@ -116,7 +153,7 @@ const Pantry = ({ updatePantryItems }) => {
             value={pantryInput}
             onChange={(e) => {
               setPantryInput(e.target.value);
-              fetchImages(e.target.value); // Fetch images when input changes
+              fetchImages(e.target.value);
             }}
             fullWidth
           />
@@ -170,44 +207,87 @@ const Pantry = ({ updatePantryItems }) => {
       </Grid>
 
       <Typography variant="h6" style={{ marginTop: "20px" }}>
+        Select an Image
+      </Typography>
+      <Grid container spacing={2}>
+        {images.map((image) => (
+          <Grid item xs={2} key={image.id}>
+            <img
+              src={image.src.medium}
+              alt={image.alt}
+              style={{
+                width: "100%",
+                cursor: "pointer",
+                border: selectedImage === image.src.medium ? "2px solid blue" : "none",
+              }}
+              onClick={() => setSelectedImage(image.src.medium)}
+            />
+          </Grid>
+        ))}
+      </Grid>
+
+      <Typography variant="h6" style={{ marginTop: "20px" }}>
         Current Pantry Items
       </Typography>
 
       <List>
         {pantryList.map((item) => (
-          <ListItem key={item.id} secondaryAction={
-            <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveItem(item)}>
-              <DeleteIcon />
-            </IconButton>
-          }>
+          <ListItem
+            key={item.id}
+            secondaryAction={
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={() => handleRemoveItem(item)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            }
+          >
             {item.image ? (
-              <img src={item.image} alt={item.name} style={{ width: '50px', height: '50px', marginRight: '10px' }} />
+              <img
+                src={item.image}
+                alt={item.name}
+                style={{ width: "50px", height: "50px", marginRight: "10px" }}
+              />
             ) : (
-              <div style={{ width: '50px', height: '50px', marginRight: '10px', backgroundColor: '#eee' }} />
+              <div
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  marginRight: "10px",
+                  backgroundColor: "#eee",
+                }}
+              />
             )}
-            <ListItemText primary={`${item.name} (${item.amount} ${item.measurement})`} secondary={item.purchaseDate ? `Purchased on: ${item.purchaseDate}` : ""} />
+            <ListItemText
+              primary={`${item.name} (${item.amount} ${item.measurement})`}
+              secondary={
+                <>
+                  {item.purchaseDate && (
+                    <>
+                      <Typography component="span" variant="body2">
+                        Purchased on: {item.purchaseDate}
+                      </Typography>
+                      <span style={{ margin: "0 10px" }}></span>
+                      <Typography component="span" variant="body2">
+                        Expired:{" "}
+                        <strong
+                          style={{
+                            color: item.expired === "yes" ? "red" : "green",
+                          }}
+                        >
+                          {item.expired}
+                        </strong>
+                      </Typography>
+                    </>
+                  )}
+                </>
+              }
+            />
           </ListItem>
         ))}
       </List>
-
-      {/* Display images fetched from Pexels */}
-      {images.length > 0 && (
-        <div style={{ marginTop: '20px' }}>
-          <Typography variant="h6">Select an Image</Typography>
-          <Grid container spacing={1}>
-            {images.map((image) => (
-              <Grid item xs={2} key={image.id}>
-                <img
-                  src={image.src.medium}
-                  alt={image.alt}
-                  style={{ width: '100%', cursor: 'pointer', border: selectedImage === image.src.medium ? '2px solid blue' : 'none' }}
-                  onClick={() => setSelectedImage(image.src.medium)} // Set selected image
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </div>
-      )}
     </Paper>
   );
 };
