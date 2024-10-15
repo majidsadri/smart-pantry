@@ -89,7 +89,7 @@ def recommend():
     usual_meals = profile_data.get('usualMeals', '')
 
     # Construct the prompt for OpenAI GPT-3.5
-    prompt = f"Based on the following pantry items: {', '.join(pantry_item_names)}, suggest 10 simple and unique recipes."
+    prompt = f"Based on the following pantry items: {', '.join(pantry_item_names)}, suggest 7 simple and unique recipes."
     if diet and diet.lower() != "none":
         prompt += f" The recipes should be suitable for a {diet} diet."
     if restrictions:
@@ -146,6 +146,8 @@ def recommend():
         # Add the last recipe
         if current_recipe["title"]:
             final_recipes.append(current_recipe)
+        
+        
 
         if len(final_recipes) > 0:
             return jsonify({"suggestions": final_recipes})
