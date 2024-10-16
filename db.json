@@ -73,11 +73,20 @@
       "expired": "no"
     },
     {
-      "id": "f191",
-      "name": "celery",
+      "id": "64e9",
+      "name": "spinach",
+      "amount": "2",
+      "measurement": "units",
+      "image": "https://images.pexels.com/photos/2325843/pexels-photo-2325843.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-16",
+      "expired": "no"
+    },
+    {
+      "id": "3f81",
+      "name": "beans",
       "amount": "4",
       "measurement": "units",
-      "image": "https://images.pexels.com/photos/907192/pexels-photo-907192.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "image": "https://images.pexels.com/photos/122370/pexels-photo-122370.jpeg?auto=compress&cs=tinysrgb&h=350",
       "purchaseDate": "2024-10-16",
       "expired": "no"
     }

@@ -1,10 +1,24 @@
 import React, { useState } from "react";
-import { Typography, CircularProgress, Button } from "@mui/material";
+import {
+  Typography,
+  CircularProgress,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
+import axios from "axios";
 
 const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
   const [recipes, setRecipes] = useState([]); // Store all the recipes
   const [currentRecipeIndex, setCurrentRecipeIndex] = useState(0); // Track current recipe
   const [loading, setLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false); // Control dialog visibility
+  const [foodImage, setFoodImage] = useState(""); // Store the food image URL
+
+  const GOOGLE_API_KEY = "AIzaSyBwqPu9e7n8gkQBJozcuL5_UKN1pVsGqWk";
+  const GOOGLE_CSE_ID = "105c5b600af644edc"; // Replace with your actual Custom Search Engine ID
 
   // Function to fetch recipe suggestions
   const fetchSuggestions = () => {
@@ -24,11 +38,7 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
       .then((response) => response.json())
       .then((data) => {
         if (data.suggestions && data.suggestions.length > 0) {
-          setRecipes(
-            data.suggestions.length > 0
-              ? data.suggestions
-              : [{ title: "No recipe suggestions available", instructions: "" }]
-          );
+          setRecipes(data.suggestions);
           setCurrentRecipeIndex(0); // Show the first recipe
         } else {
           setRecipes([{ title: "No recipe suggestions available", instructions: "" }]);
@@ -43,10 +53,35 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
       });
   };
 
+  // Function to fetch an image from Google Custom Search
+  const fetchFoodImage = async (query) => {
+    try {
+      const refinedQuery = `${query} recipe food dish`;
+      const response = await axios.get(
+        `https://www.googleapis.com/customsearch/v1?q=${refinedQuery}&searchType=image&key=${GOOGLE_API_KEY}&cx=${GOOGLE_CSE_ID}&num=1`
+      );
+  
+      console.log("Google API Response:", response.data);
+      if (response.data.items && response.data.items.length > 0) {
+        const imageUrl = response.data.items[0].link;
+        console.log("Fetched Image URL:", imageUrl);
+        setFoodImage(imageUrl);
+      } else {
+        console.log("No images found for this query.");
+        setFoodImage("");
+      }
+    } catch (error) {
+      console.error("Error fetching food image:", error);
+      setFoodImage("");
+    }
+  };
+  
+
   // Handle Like button click
   const handleLike = () => {
-    alert("You liked the recipe!");
-    // You can implement further functionality like storing liked recipes
+    const selectedRecipe = recipes[currentRecipeIndex];
+    fetchFoodImage(selectedRecipe.title);
+    setOpenDialog(true); // Open the dialog to show recipe details
   };
 
   // Handle Dislike button click, show the next recipe if available
@@ -56,6 +91,12 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
     } else {
       alert("No more recipes to show.");
     }
+  };
+
+  // Close the dialog
+  const handleClose = () => {
+    setOpenDialog(false);
+    setFoodImage(""); // Clear the image when the dialog closes
   };
 
   // Dynamic title based on the diet preferences
@@ -74,7 +115,7 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
         onClick={fetchSuggestions}
         style={{ marginBottom: "20px" }}
       >
-        Suggest me a recipe
+        Suggest some recipes
       </Button>
 
       <Typography variant="h5" gutterBottom>
@@ -87,21 +128,13 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
         <div>
           {recipes[currentRecipeIndex] && (
             <>
-              <Typography variant="h6" style={{ fontWeight: "bold", color: "#3f51b5" }}>
-                  {recipes[currentRecipeIndex].title}
+              <Typography
+                variant="h6"
+                style={{ fontWeight: "bold", color: "#3f51b5" }}
+              >
+                {recipes[currentRecipeIndex].title}
               </Typography>
-              <Typography variant="body1" style={{ whiteSpace: "pre-line", marginTop: "10px" }}>
-                  {recipes[currentRecipeIndex].instructions}
-              </Typography>
-              <Typography variant="body2" style={{ marginTop: "10px", fontWeight: "bold", color: "#3f51b5" }}>
-                  Cooking Time: {recipes[currentRecipeIndex].cooking_time} minutes
-              </Typography>
-              <Typography variant="body2" style={{ fontWeight: "bold", color: "#3f51b5" }}>
-                  Calories: {recipes[currentRecipeIndex].calories} per serving
-              </Typography>
-          </>
-
-
+            </>
           )}
           <div style={{ marginTop: "20px" }}>
             <Button variant="contained" color="primary" onClick={handleLike}>
@@ -116,6 +149,56 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
               Dislike
             </Button>
           </div>
+
+          {/* Dialog for showing recipe details */}
+          <Dialog
+            open={openDialog}
+            onClose={handleClose}
+            maxWidth="sm"
+            fullWidth
+            PaperProps={{
+              style: {
+                border: "3px solid #3f51b5",
+                borderRadius: "10px",
+                padding: "20px",
+                fontFamily: "'Roboto', sans-serif",
+              },
+            }}
+          >
+            <DialogTitle style={{ fontSize: "24px", color: "#3f51b5", fontWeight: "bold" }}>
+              {recipes[currentRecipeIndex].title}
+            </DialogTitle>
+            <DialogContent style={{ fontSize: "16px", color: "#555", lineHeight: "1.6" }}>
+              {foodImage && (
+                <img
+                  src={foodImage}
+                  alt={recipes[currentRecipeIndex].title}
+                  style={{
+                    width: "192px", // 2 inches wide
+                    height: "auto",
+                    marginBottom: "15px",
+                    borderRadius: "10px",
+                    display: "block",
+                    margin: "0 auto",
+                  }}
+                />
+              )}
+              <Typography variant="body1" gutterBottom>
+                <strong>Instructions:</strong> {recipes[currentRecipeIndex].instructions}
+              </Typography>
+              <Typography variant="body2" style={{ marginTop: "10px" }}>
+                <strong>Cooking Time:</strong> {recipes[currentRecipeIndex].cooking_time} minutes
+              </Typography>
+              <Typography variant="body2" style={{ marginTop: "10px" }}>
+                <strong>Calories:</strong> {recipes[currentRecipeIndex].calories} per serving
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary" style={{ fontWeight: "bold" }}>
+                Close
+              </Button>
+            </DialogActions>
+          </Dialog>
         </div>
       ) : (
         <Typography>No recipe suggestions available.</Typography>

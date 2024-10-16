@@ -33,6 +33,9 @@ npm run server
 
 npm start
 
+Google key:
+Search engine ID:  105c5b600af644edc
+API key: AIzaSyBwqPu9e7n8gkQBJozcuL5_UKN1pVsGqWk
 https://www.pexels.com/
 CqDXEkdz6MLbZaaVCye7GioUsuRrVaG2ATmIFeNHX3EF2o4gbpOPERao
 

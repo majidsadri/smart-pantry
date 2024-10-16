@@ -48,18 +48,21 @@ def save_profile():
 @app.route('/get_tip', methods=['GET'])
 def get_tip():
     try:
-        # Call OpenAI's GPT-3.5 to get a cooking tip
+        # Call OpenAI's GPT-3.5 to get a funnier cooking tip
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a helpful assistant that provides cooking tips."},
-                {"role": "user", "content": "Please provide a short and practical cooking tip."}
+                {"role": "system", "content": "You are a fun and humorous assistant that provides cooking tips."},
+                {"role": "user", "content": "Please provide a short and practical cooking tip that is funny and light-hearted."}
             ]
         )
         
         # Extract the tip from the API response
         tip = response.choices[0].message['content'].strip()
         
+        # Add a funny twist with emojis
+        tip += " 😂👩‍🍳"
+
         # Log the tip for debugging
         logging.info(f"Generated cooking tip: {tip}")
         
@@ -67,7 +70,7 @@ def get_tip():
 
     except openai.error.OpenAIError as e:
         logging.error(f"OpenAI API error: {e}")
-        return jsonify({"tip": "Couldn't fetch a tip at this time, please try again later."}), 500
+        return jsonify({"tip": "Couldn't fetch a tip at this time, please try again later. 😅"}), 500
 
     except Exception as e:
         logging.error(f"General error: {e}")
