@@ -2,12 +2,12 @@
     "profiles": [
         {
             "name": "Majid",
-            "purpose": "Single Person",
+            "purpose": "Couple",
             "familyMembers": 1,
-            "cookDays": 0,
+            "cookDays": "3",
             "diet": "Low-Carb",
             "restrictions": "",
-            "usualMeals": "Regular",
+            "usualMeals": "Persian",
             "activated": true
         }
     ]

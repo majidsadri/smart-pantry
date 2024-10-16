@@ -1,24 +1,6 @@
 {
   "pantry": [
     {
-      "id": "27a2",
-      "name": "noodle",
-      "amount": "3",
-      "measurement": "kg",
-      "image": "https://images.pexels.com/photos/1395319/pexels-photo-1395319.jpeg?auto=compress&cs=tinysrgb&h=350",
-      "purchaseDate": "2024-09-05",
-      "expired": "no"
-    },
-    {
-      "id": "ecbc",
-      "name": "salt",
-      "amount": "2",
-      "measurement": "units",
-      "image": "https://images.pexels.com/photos/2320244/pexels-photo-2320244.jpeg?auto=compress&cs=tinysrgb&h=350",
-      "purchaseDate": "2024-04-09",
-      "expired": "no"
-    },
-    {
       "id": "bfb8",
       "name": "Apple",
       "amount": "4",
@@ -87,6 +69,42 @@
       "amount": "4",
       "measurement": "units",
       "image": "https://images.pexels.com/photos/122370/pexels-photo-122370.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-16",
+      "expired": "no"
+    },
+    {
+      "id": "c108",
+      "name": "lemon",
+      "amount": "3",
+      "measurement": "units",
+      "image": "https://images.pexels.com/photos/1414110/pexels-photo-1414110.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-16",
+      "expired": "no"
+    },
+    {
+      "id": "9f8c",
+      "name": "lentil",
+      "amount": "1",
+      "measurement": "kg",
+      "image": "https://images.pexels.com/photos/3735165/pexels-photo-3735165.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-16",
+      "expired": "no"
+    },
+    {
+      "id": "de07",
+      "name": "noodle",
+      "amount": "2",
+      "measurement": "units",
+      "image": "https://images.pexels.com/photos/2664216/pexels-photo-2664216.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-16",
+      "expired": "no"
+    },
+    {
+      "id": "3f1f",
+      "name": "paprika",
+      "amount": "2",
+      "measurement": "units",
+      "image": "https://images.pexels.com/photos/1843385/pexels-photo-1843385.jpeg?auto=compress&cs=tinysrgb&h=350",
       "purchaseDate": "2024-10-16",
       "expired": "no"
     }

@@ -18,6 +18,7 @@ import Ingredients from "./components/Ingredients/Ingredients";
 import "./App.css";
 import pantryLogo from "./assets/pantry-logo.png";
 
+
 function App() {
   const [pantryItems, setPantryItems] = useState([]);
   const [dietPreferences, setDietPreferences] = useState({
@@ -162,7 +163,7 @@ function App() {
             />
           </Button>
           <Typography variant="h6" style={{ flexGrow: 1 }}>
-            Smart Pantry Manager
+            SPAN [ Smart Pantry ]
           </Typography>
           <Button color="inherit" onClick={handleMenuOpen} style={{ marginLeft: "auto" }}>
             Menu

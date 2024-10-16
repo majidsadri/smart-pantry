@@ -15,23 +15,30 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 PROFILE_FILE_PATH = 'profile_data.json'
 
 # Enable logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def save_all_profiles(profiles):
     try:
         with open(PROFILE_FILE_PATH, 'w') as file:
             json.dump({"profiles": profiles}, file, indent=4)
+        logging.debug(f"Profiles saved: {profiles}")
         return True
     except Exception as e:
         logging.error(f"Error saving profile data: {e}")
         return False
 
 def load_all_profiles():
-    if os.path.exists(PROFILE_FILE_PATH):
-        with open(PROFILE_FILE_PATH, 'r') as file:
-            data = json.load(file)
-            return data.get("profiles", [])
-    else:
+    try:
+        if os.path.exists(PROFILE_FILE_PATH):
+            with open(PROFILE_FILE_PATH, 'r') as file:
+                data = json.load(file)
+                logging.debug(f"Loaded profile data: {data}")
+                return data.get("profiles", [])
+        else:
+            logging.warning("Profile data file does not exist. Returning empty list.")
+            return []
+    except Exception as e:
+        logging.error(f"Error reading profile data: {e}")
         return []
 
 @app.route('/save_profile', methods=['POST'])
@@ -42,13 +49,17 @@ def save_profile():
     if not profile_name:
         return jsonify({"status": "Profile name is required."}), 400
 
+    logging.debug(f"Received profile data for saving: {profile_data}")
+
     profiles = load_all_profiles()
     existing_profile = next((p for p in profiles if p["name"] == profile_name), None)
     if existing_profile:
         profiles = [p for p in profiles if p["name"] != profile_name]
         profiles.append(profile_data)
+        logging.info(f"Updated profile for '{profile_name}'.")
     else:
         profiles.append(profile_data)
+        logging.info(f"Added new profile for '{profile_name}'.")
 
     if save_all_profiles(profiles):
         return jsonify({"status": "Profile saved successfully."}), 200
@@ -96,32 +107,46 @@ def get_tip():
 def recommend():
     pantry_items = request.json.get('pantry', [])
     profile_name = request.json.get('profileName')
-    profiles = load_all_profiles()
     logging.info(f"Received pantry items: {pantry_items}")
     logging.info(f"Received profile name: {profile_name}")
 
-    # Extract pantry item names from the request
+    profiles = load_all_profiles()
     pantry_item_names = [item['name'] if isinstance(item, dict) else item for item in pantry_items]
 
+    # Check if pantry items are provided
     if not pantry_item_names:
-        return jsonify({"suggestions": [{"title": "No pantry items provided", "instructions": "Please provide pantry items to generate recipes."}]}), 400
+        return jsonify({
+            "suggestions": [{
+                "title": "No pantry items provided",
+                "instructions": "Please provide pantry items to generate recipes."
+            }]
+        }), 400
 
-    # Look for the activated profile with the given profile name
-    profile_data = next((p for p in profiles if p["name"] == profile_name and p.get("activated")), None)
+    # Look for an activated profile with the given profile name if profile_name is not None
+    if profile_name:
+        profile_data = next(
+            (p for p in profiles if p["name"].lower() == profile_name.lower() and p.get("activated")),
+            None
+        )
+    else:
+        profile_data = None
 
-    # If no activated profile is found, use default values or use the provided profile name
+    # Default to basic values if no activated profile is found
     if not profile_data:
         logging.warning(f"No activated profile found for '{profile_name}'. Using default values.")
-        profile_data = {"diet": "None", "restrictions": "", "usualMeals": "Regular"}
+        profile_data = {
+            "diet": "None",
+            "restrictions": "",
+            "usualMeals": "Regular"
+        }
 
-    # Extract values from the profile
+    # Extract profile details for constructing the query
     diet = profile_data.get('diet', 'None')
     restrictions = profile_data.get('restrictions', '')
     usual_meals = profile_data.get('usualMeals', 'Regular')
-
     logging.info(f"Diet: {diet}, Restrictions: {restrictions}, Usual Meals: {usual_meals}")
 
-    # Construct the prompt for OpenAI
+    # Build the prompt for OpenAI
     prompt = f"Based on the following pantry items: {', '.join(pantry_item_names)}, suggest 7 simple and unique recipes."
     if diet.lower() != "none":
         prompt += f" The recipes should be suitable for a {diet} diet."
@@ -137,9 +162,9 @@ def recommend():
     Cooking Time: Estimated cooking time in minutes.
     Calories: Estimated calories per serving.
     """
-
     logging.info(f"GPT Prompt: {prompt}")
 
+    # Send the prompt to OpenAI and process the response
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -151,11 +176,11 @@ def recommend():
         suggestions = response.choices[0].message['content']
         logging.info(f"GPT Response: {suggestions}")
 
+        # Parse the response into structured recipe objects
         recipe_list = suggestions.split("\n")
         final_recipes = []
         current_recipe = {"title": "", "instructions": "", "cooking_time": "", "calories": ""}
 
-        # Parse the GPT response into recipe objects
         for line in recipe_list:
             if line.startswith("Title:"):
                 if current_recipe["title"]:
@@ -176,10 +201,14 @@ def recommend():
         return jsonify({"suggestions": final_recipes}), 200
     except openai.error.OpenAIError as e:
         logging.error(f"OpenAI API error: {e}")
-        return jsonify({"suggestions": [{"title": "Error", "instructions": "There was an error generating the suggestions."}]}), 500
+        return jsonify({
+            "suggestions": [{"title": "Error", "instructions": "There was an error generating the suggestions."}]
+        }), 500
     except Exception as e:
         logging.error(f"General error: {e}")
-        return jsonify({"suggestions": [{"title": "Error", "instructions": "Error generating suggestions."}]}), 500
+        return jsonify({
+            "suggestions": [{"title": "Error", "instructions": "Error generating suggestions."}]
+        }), 500
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)
