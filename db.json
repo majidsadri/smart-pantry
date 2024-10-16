@@ -1,24 +1,6 @@
 {
   "pantry": [
     {
-      "id": "4068",
-      "name": "flour",
-      "amount": "3",
-      "measurement": "kg",
-      "image": "https://images.pexels.com/photos/94443/pexels-photo-94443.jpeg?auto=compress&cs=tinysrgb&h=350",
-      "purchaseDate": "2024-07-16",
-      "expired": "no"
-    },
-    {
-      "id": "23e5",
-      "name": "celery",
-      "amount": "3",
-      "measurement": "units",
-      "image": "https://images.pexels.com/photos/5237904/pexels-photo-5237904.jpeg?auto=compress&cs=tinysrgb&h=350",
-      "purchaseDate": "2024-07-17",
-      "expired": "no"
-    },
-    {
       "id": "27a2",
       "name": "noodle",
       "amount": "3",
@@ -34,15 +16,6 @@
       "measurement": "units",
       "image": "https://images.pexels.com/photos/2320244/pexels-photo-2320244.jpeg?auto=compress&cs=tinysrgb&h=350",
       "purchaseDate": "2024-04-09",
-      "expired": "no"
-    },
-    {
-      "id": "8b67",
-      "name": "spinach",
-      "amount": "2",
-      "measurement": "units",
-      "image": "https://images.pexels.com/photos/1351238/pexels-photo-1351238.jpeg?auto=compress&cs=tinysrgb&h=350",
-      "purchaseDate": "2024-09-10",
       "expired": "no"
     },
     {
@@ -79,6 +52,33 @@
       "measurement": "kg",
       "image": "https://images.pexels.com/photos/1683545/pexels-photo-1683545.jpeg?auto=compress&cs=tinysrgb&h=350",
       "purchaseDate": "2024-04-02",
+      "expired": "no"
+    },
+    {
+      "id": "5afc",
+      "name": "celery",
+      "amount": "2",
+      "measurement": "units",
+      "image": "https://images.pexels.com/photos/4443441/pexels-photo-4443441.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-16",
+      "expired": "no"
+    },
+    {
+      "id": "1e7b",
+      "name": "cinamon",
+      "amount": "2",
+      "measurement": "units",
+      "image": "https://images.pexels.com/photos/3563621/pexels-photo-3563621.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-16",
+      "expired": "no"
+    },
+    {
+      "id": "f191",
+      "name": "celery",
+      "amount": "4",
+      "measurement": "units",
+      "image": "https://images.pexels.com/photos/907192/pexels-photo-907192.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-16",
       "expired": "no"
     }
   ],

@@ -52,11 +52,18 @@ const Pantry = ({ updatePantryItems, addToShoppingList }) => {
           Authorization: API_KEY,
         },
       });
-      setImages(response.data.photos);
+  
+      // Set only the first image if available without additional filtering
+      if (response.data.photos.length > 0) {
+        setImages([response.data.photos[0]]);
+      } else {
+        setImages([]);
+      }
     } catch (error) {
       console.error("Error fetching images:", error);
     }
   };
+  
 
   const isAboutToExpire = (item) => {
     if (!item.purchaseDate) return false;
@@ -85,16 +92,20 @@ const Pantry = ({ updatePantryItems, addToShoppingList }) => {
   };
 
   const handleAddItem = () => {
-    if (pantryInput.trim() && amount.trim() && measurement.trim()) {
+    // Set default values if not provided
+    const defaultMeasurement = measurement.trim() || "units";
+    const defaultPurchaseDate = purchaseDate || new Date().toISOString().split("T")[0];
+  
+    if (pantryInput.trim() && amount.trim()) {
       const newItem = {
         name: pantryInput.trim(),
         amount: amount.trim(),
-        measurement: measurement.trim(),
+        measurement: defaultMeasurement,
         image: selectedImage,
-        purchaseDate,
-        expired: isAboutToExpire({ purchaseDate, name: pantryInput }) ? "yes" : "no",
+        purchaseDate: defaultPurchaseDate,
+        expired: isAboutToExpire({ purchaseDate: defaultPurchaseDate, name: pantryInput }) ? "yes" : "no",
       };
-
+  
       // Send the new item to the backend
       fetch("http://localhost:5000/pantry", {
         method: "POST",
@@ -113,7 +124,7 @@ const Pantry = ({ updatePantryItems, addToShoppingList }) => {
         .catch((error) => {
           console.error("Error adding pantry item:", error);
         });
-
+  
       // Clear the form fields
       setPantryInput("");
       setAmount("");
@@ -125,6 +136,7 @@ const Pantry = ({ updatePantryItems, addToShoppingList }) => {
       console.warn("Please fill in all fields before adding.");
     }
   };
+  
 
   const handleRemoveItem = (itemToRemove) => {
     fetch(`http://localhost:5000/pantry/${itemToRemove.id}`, {

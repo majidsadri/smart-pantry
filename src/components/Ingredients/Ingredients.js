@@ -18,9 +18,21 @@ const Ingredients = ({ pantryItems, onChange, onRefresh }) => {
   const [selectedItems, setSelectedItems] = useState([]);
 
   const handleSelectChange = (event) => {
-    setSelectedItems(event.target.value);
-    onChange(event.target.value);
+    const value = event.target.value;
+    if (value.includes("all")) {
+      // If "Select All" is selected, toggle between select all and deselect all
+      const allItems = pantryItems.map((item) => item.name);
+      setSelectedItems(
+        selectedItems.length === pantryItems.length ? [] : allItems
+      );
+      onChange(selectedItems.length === pantryItems.length ? [] : allItems);
+    } else {
+      setSelectedItems(value);
+      onChange(value);
+    }
   };
+
+  const isAllSelected = selectedItems.length === pantryItems.length;
 
   return (
     <Paper elevation={3} style={{ padding: "20px" }}>
@@ -28,13 +40,19 @@ const Ingredients = ({ pantryItems, onChange, onRefresh }) => {
         Select Ingredients
         <IconButton
           onClick={onRefresh}
-          style={{ marginLeft: "10px", color: "#007bff" }} // Make the icon blue
+          style={{ marginLeft: "10px", color: "#007bff" }}
         >
           <RefreshIcon />
         </IconButton>
       </Typography>
-      <FormControl fullWidth variant="outlined" style={{ marginTop: "20px", marginBottom: "20px" }}>
-        <InputLabel id="select-pantry-items-label">Select Pantry Items</InputLabel>
+      <FormControl
+        fullWidth
+        variant="outlined"
+        style={{ marginTop: "20px", marginBottom: "20px" }}
+      >
+        <InputLabel id="select-pantry-items-label">
+          Select Pantry Items
+        </InputLabel>
         <Select
           labelId="select-pantry-items-label"
           multiple
@@ -43,9 +61,17 @@ const Ingredients = ({ pantryItems, onChange, onRefresh }) => {
           label="Select Pantry Items"
           renderValue={(selected) => selected.join(", ")}
         >
+          <MenuItem value="all">
+            <Checkbox checked={isAllSelected} />
+            <ListItemText primary="Select All" />
+          </MenuItem>
           {pantryItems.length > 0 ? (
             pantryItems.map((item) => (
-              <MenuItem key={item.id} value={item.name} style={{ display: "flex", alignItems: "center" }}>
+              <MenuItem
+                key={item.id}
+                value={item.name}
+                style={{ display: "flex", alignItems: "center" }}
+              >
                 <Checkbox checked={selectedItems.indexOf(item.name) > -1} />
                 <Avatar
                   src={item.image}
