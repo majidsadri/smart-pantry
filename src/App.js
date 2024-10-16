@@ -21,53 +21,49 @@ import pantryLogo from "./assets/pantry-logo.png";
 function App() {
   const [pantryItems, setPantryItems] = useState([]);
   const [dietPreferences, setDietPreferences] = useState({
+    name: "Majid",
     diet: "None",
     restrictions: "",
     usualMeals: "",
   });
-  const [cookingTip, setCookingTip] = useState(""); // State to hold the cooking tip
+  const [cookingTip, setCookingTip] = useState("");
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [currentPage, setCurrentPage] = useState("Landing Page");
 
-  // Function to fetch pantry items from the backend
   const fetchPantryItems = () => {
     fetch("http://localhost:5000/pantry")
       .then((response) => response.json())
-      .then((data) => {
-        setPantryItems(data);
-      })
+      .then((data) => setPantryItems(data))
       .catch((error) => console.error("Error fetching pantry items:", error));
   };
 
-  // Function to fetch profile data from the backend
   const fetchProfileData = () => {
-    fetch("http://127.0.0.1:5001/get_profile")
+    fetch(`http://127.0.0.1:5001/get_profile?name=${dietPreferences.name}`)
       .then((response) => response.json())
       .then((data) => {
-        setDietPreferences({
+        setDietPreferences((prevState) => ({
+          ...prevState,
+          name: data.name || prevState.name, // Ensure name is updated correctly
           diet: data.diet || "None",
           restrictions: data.restrictions || "",
-          usualMeals: data.usualMeals || "",
-        });
+          usualMeals: data.usualMeals || "Regular",
+        }));
       })
       .catch((error) => console.error("Error fetching profile data:", error));
   };
 
-  // Function to fetch a cooking tip from the backend
   const fetchCookingTip = () => {
     fetch("http://127.0.0.1:5001/get_tip")
       .then((response) => response.json())
-      .then((data) => {
-        setCookingTip(data.tip || "Enjoy your cooking!");
-      })
+      .then((data) => setCookingTip(data.tip || "Enjoy your cooking!"))
       .catch((error) => console.error("Error fetching cooking tip:", error));
   };
 
   useEffect(() => {
     fetchPantryItems();
-    fetchProfileData(); // Fetch profile data when the app loads
-    fetchCookingTip();  // Fetch a cooking tip when the app loads
+    fetchProfileData();
+    fetchCookingTip();
   }, []);
 
   const handleMenuOpen = (event) => {
@@ -80,7 +76,7 @@ function App() {
 
   const handleNavigation = (page) => {
     if (page === "Ingredients") {
-      fetchPantryItems(); // Fetch the pantry items again when navigating to Ingredients
+      fetchPantryItems();
     }
     setCurrentPage(page);
     setMenuAnchor(null);
@@ -97,13 +93,25 @@ function App() {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case "Profile":
-        return <Profile updateDietPreferences={setDietPreferences} />;
+        return (
+          <Profile
+            updateDietPreferences={(name, diet, restrictions, usualMeals) =>
+              setDietPreferences((prevState) => ({
+                ...prevState,
+                name: name,
+                diet: diet,
+                restrictions: restrictions,
+                usualMeals: usualMeals,
+              }))
+            }
+          />
+        );
       case "Shopping List":
         return (
           <ShoppingList
             pantryItems={pantryItems}
             dietPreferences={dietPreferences}
-            refreshPantryItems={fetchPantryItems} // Pass the refresh function
+            refreshPantryItems={fetchPantryItems}
           />
         );
       case "Landing Page":
@@ -117,7 +125,7 @@ function App() {
                 <Ingredients
                   pantryItems={pantryItems}
                   onChange={handleIngredientsChange}
-                  onRefresh={fetchPantryItems} // Pass the refresh function
+                  onRefresh={fetchPantryItems}
                 />
               </Paper>
             </Grid>
@@ -127,7 +135,7 @@ function App() {
                   Recipe Suggestions
                 </Typography>
                 <RecipeSuggestions
-                  pantryItems={selectedIngredients} // Use selected ingredients
+                  pantryItems={selectedIngredients}
                   dietPreferences={dietPreferences}
                 />
               </Paper>
@@ -140,6 +148,7 @@ function App() {
         return <Pantry updatePantryItems={setPantryItems} />;
     }
   };
+  
 
   return (
     <Container maxWidth="lg" className="Container">
@@ -169,13 +178,38 @@ function App() {
         </Toolbar>
       </AppBar>
 
-      <Paper elevation={3} style={{ padding: "10px", margin: "20px 0", textAlign: "center" }}>
-        <Typography variant="subtitle1">
-          Preferred Diet: {dietPreferences.diet || "Not Specified"}
+      <Paper
+        elevation={3}
+        style={{
+          padding: "20px",
+          margin: "20px 0",
+          textAlign: "center",
+          backgroundColor: "#f9f9f9",
+        }}
+      >
+        <Typography variant="subtitle1" style={{ fontWeight: "bold", marginBottom: "10px" }}>
+          Profile:{" "}
+          <span style={{ fontWeight: "normal", color: "#2c3e50" }}>
+            {dietPreferences.name}
+          </span>
+        </Typography>
+        <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
+          Preferred Diet:{" "}
+          <span style={{ fontWeight: "normal", color: "#2c3e50" }}>
+            {dietPreferences.diet || "Not Specified"}
+          </span>
         </Typography>
       </Paper>
 
-      <Paper elevation={3} style={{ padding: "10px", margin: "10px 0", backgroundColor: "#f0f8ff", textAlign: "center" }}>
+      <Paper
+        elevation={3}
+        style={{
+          padding: "20px",
+          margin: "20px 0",
+          backgroundColor: "#f0f8ff",
+          textAlign: "center",
+        }}
+      >
         <Typography variant="subtitle2" style={{ color: "#333" }}>
           Cooking Tip: {cookingTip}
         </Typography>

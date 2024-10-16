@@ -3,37 +3,42 @@ import { Paper, TextField, Button, MenuItem, Typography, Grid } from "@mui/mater
 import "./Profile.css";
 
 const Profile = ({ updateDietPreferences }) => {
+  const [name, setName] = useState("Majid"); // Name field for profile identification
   const [purpose, setPurpose] = useState("Single Person");
   const [familyMembers, setFamilyMembers] = useState(1);
   const [diet, setDiet] = useState("None");
   const [restrictions, setRestrictions] = useState("");
   const [cookDays, setCookDays] = useState(0);
-  const [usualMeals, setUsualMeals] = useState(""); // State for usual meals
+  const [usualMeals, setUsualMeals] = useState("");
 
   // Fetch saved profile data from the backend on mount
   useEffect(() => {
-    fetch('http://127.0.0.1:5001/get_profile')
+    fetch(`http://127.0.0.1:5001/get_profile?name=${name}`)
       .then(response => response.json())
       .then(data => {
         console.log("Fetched profile data:", data); // Log the data for debugging
+        setPurpose(data.purpose || "Single Person");
+        setFamilyMembers(data.familyMembers || 1);
+        setCookDays(data.cookDays || 0);
         setDiet(data.diet || "None");
         setRestrictions(data.restrictions || "");
         setUsualMeals(data.usualMeals || "Regular");
       })
       .catch(error => console.error("Error fetching profile:", error));
-  }, []);  
-  
+  }, [name]);
+
   const handleProfileSubmit = () => {
     const profileData = {
+      name,
       purpose,
       familyMembers: purpose === "Family" ? familyMembers : 1,
       cookDays,
       diet,
       restrictions,
       usualMeals,
+      activated: true, // Add the activated flag here
     };
-
-    // Save the profile data to the backend
+  
     fetch('http://127.0.0.1:5001/save_profile', {
       method: 'POST',
       headers: {
@@ -44,10 +49,13 @@ const Profile = ({ updateDietPreferences }) => {
       .then(response => response.json())
       .then(data => {
         console.log("Profile saved:", data);
-        updateDietPreferences(diet, restrictions, usualMeals);
+        // Update all values including name in the App state
+        updateDietPreferences(name, diet, restrictions, usualMeals);
       })
       .catch(error => console.error("Error saving profile:", error));
   };
+  
+  
 
   return (
     <Paper elevation={3} style={{ padding: "20px", marginBottom: "20px" }}>
@@ -55,6 +63,18 @@ const Profile = ({ updateDietPreferences }) => {
         Profile Settings
       </Typography>
       <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <TextField
+            select
+            label="Profile Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            fullWidth
+          >
+            <MenuItem value="Majid">Majid</MenuItem>
+            <MenuItem value="John">John</MenuItem>
+          </TextField>
+        </Grid>
         <Grid item xs={12}>
           <TextField
             select
@@ -132,13 +152,12 @@ const Profile = ({ updateDietPreferences }) => {
           >
             <MenuItem value="Steaks">Steaks</MenuItem>
             <MenuItem value="Salads">Salads</MenuItem>
-            <MenuItem value="Regular">Regular</MenuItem> {/* Add this MenuItem correctly */}
+            <MenuItem value="Regular">Regular</MenuItem>
             <MenuItem value="Persian">Persian</MenuItem>
             <MenuItem value="Chinese">Chinese</MenuItem>
             <MenuItem value="Fish and Seafood">Fish and Seafood</MenuItem>
           </TextField>
         </Grid>
-
 
         <Grid item xs={12}>
           <Button variant="contained" color="primary" onClick={handleProfileSubmit}>

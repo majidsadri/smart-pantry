@@ -1,1 +1,14 @@
-{"purpose": "Single Person", "familyMembers": 1, "cookDays": 0, "diet": "Low-Carb", "restrictions": "", "usualMeals": "Regular"}
+{
+    "profiles": [
+        {
+            "name": "Majid",
+            "purpose": "Single Person",
+            "familyMembers": 1,
+            "cookDays": 0,
+            "diet": "Low-Carb",
+            "restrictions": "",
+            "usualMeals": "Regular",
+            "activated": true
+        }
+    ]
+}
