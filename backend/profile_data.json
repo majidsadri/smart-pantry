@@ -1,11 +1,31 @@
 {
     "profiles": [
         {
+            "name": "Soha",
+            "purpose": "Couple",
+            "familyMembers": 1,
+            "cookDays": 0,
+            "diet": "Low-Carb",
+            "restrictions": "",
+            "usualMeals": "Regular",
+            "activated": false
+        },
+        {
             "name": "John",
             "purpose": "Single Person",
             "familyMembers": 1,
             "cookDays": 0,
             "diet": "Vegan",
+            "restrictions": "",
+            "usualMeals": "Regular",
+            "activated": false
+        },
+        {
+            "name": "Test",
+            "purpose": "Single Person",
+            "familyMembers": 1,
+            "cookDays": 0,
+            "diet": "None",
             "restrictions": "",
             "usualMeals": "Regular",
             "activated": false

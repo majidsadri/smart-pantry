@@ -4,6 +4,8 @@ import os
 import json
 import logging
 import openai
+import joblib
+
 
 app = Flask(__name__)
 CORS(app)
@@ -17,15 +19,30 @@ PROFILE_FILE_PATH = 'profile_data.json'
 # Enable logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
+
+MODEL_FILE_PATH = 'recommendation_model.pkl'
+recommendation_model = None
+
+try:
+    if os.path.exists(MODEL_FILE_PATH):
+        recommendation_model = joblib.load(MODEL_FILE_PATH)
+        logging.info("Loaded recommendation model successfully.")
+    else:
+        logging.warning("Recommendation model not found. Proceeding without it.")
+except Exception as e:
+    logging.error(f"Error loading recommendation model: {e}")
+
+    
 def save_all_profiles(profiles):
     try:
         with open(PROFILE_FILE_PATH, 'w') as file:
             json.dump({"profiles": profiles}, file, indent=4)
-        logging.debug(f"Profiles saved: {profiles}")
+        logging.debug(f"Profiles successfully saved: {profiles}")
         return True
     except Exception as e:
         logging.error(f"Error saving profile data: {e}")
         return False
+
 
 def load_all_profiles():
     try:

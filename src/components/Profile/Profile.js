@@ -5,7 +5,8 @@ import SelectAllIcon from '@mui/icons-material/SelectAll';
 import "./Profile.css";
 
 const Profile = ({ updateDietPreferences }) => {
-  const [name, setName] = useState("Majid"); // Name field for profile identification
+  const [profiles, setProfiles] = useState([]); // Store the list of profiles
+  const [name, setName] = useState(""); // Name field for profile identification
   const [purpose, setPurpose] = useState("Single Person");
   const [familyMembers, setFamilyMembers] = useState(1);
   const [diet, setDiet] = useState("None");
@@ -13,20 +14,33 @@ const Profile = ({ updateDietPreferences }) => {
   const [cookDays, setCookDays] = useState(0);
   const [usualMeals, setUsualMeals] = useState("");
 
-  // Fetch saved profile data from the backend on mount
+  // Fetch saved profiles from the backend on mount
   useEffect(() => {
-    fetch(`http://127.0.0.1:5001/get_profile?name=${name}`)
+    fetch(`http://127.0.0.1:5001/get_profiles`)
       .then(response => response.json())
       .then(data => {
-        console.log("Fetched profile data:", data); // Log the data for debugging
-        setPurpose(data.purpose || "Single Person");
-        setFamilyMembers(data.familyMembers || 1);
-        setCookDays(data.cookDays || 0);
-        setDiet(data.diet || "None");
-        setRestrictions(data.restrictions || "");
-        setUsualMeals(data.usualMeals || "Regular");
+        console.log("Fetched profiles:", data);
+        setProfiles(data);
       })
-      .catch(error => console.error("Error fetching profile:", error));
+      .catch(error => console.error("Error fetching profiles:", error));
+  }, []);
+
+  // Fetch saved profile data when a new name is selected
+  useEffect(() => {
+    if (name) {
+      fetch(`http://127.0.0.1:5001/get_profile?name=${name}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log("Fetched profile data:", data);
+          setPurpose(data.purpose || "Single Person");
+          setFamilyMembers(data.familyMembers || 1);
+          setCookDays(data.cookDays || 0);
+          setDiet(data.diet || "None");
+          setRestrictions(data.restrictions || "");
+          setUsualMeals(data.usualMeals || "Regular");
+        })
+        .catch(error => console.error("Error fetching profile:", error));
+    }
   }, [name]);
 
   const handleProfileSubmit = () => {
@@ -53,6 +67,8 @@ const Profile = ({ updateDietPreferences }) => {
         console.log("Profile saved:", data);
         // Update all values including name in the App state
         updateDietPreferences(name, diet, restrictions, usualMeals);
+        // Refresh the profile list
+        setProfiles(prevProfiles => [...prevProfiles.filter(p => p.name !== name), profileData]);
       })
       .catch(error => console.error("Error saving profile:", error));
   };
@@ -80,14 +96,26 @@ const Profile = ({ updateDietPreferences }) => {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
-            select
             label="Profile Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter new profile name or select existing"
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            select
+            label="Select Existing Profile"
             value={name}
             onChange={(e) => setName(e.target.value)}
             fullWidth
           >
-            <MenuItem value="Majid">Majid</MenuItem>
-            <MenuItem value="John">John</MenuItem>
+            {profiles.map(profile => (
+              <MenuItem key={profile.name} value={profile.name}>
+                {profile.name}
+              </MenuItem>
+            ))}
           </TextField>
         </Grid>
         <Grid item xs={12}>
