@@ -30,9 +30,7 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
       },
       body: JSON.stringify({
         pantry: pantryItems,
-        diet: dietPreferences.diet,
-        restrictions: dietPreferences.restrictions,
-        usualMeals: dietPreferences.usualMeals,
+        profileName: dietPreferences.name, // Pass the correct profile name here
       }),
     })
       .then((response) => response.json())
@@ -60,7 +58,7 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
       const response = await axios.get(
         `https://www.googleapis.com/customsearch/v1?q=${refinedQuery}&searchType=image&key=${GOOGLE_API_KEY}&cx=${GOOGLE_CSE_ID}&num=1`
       );
-  
+
       console.log("Google API Response:", response.data);
       if (response.data.items && response.data.items.length > 0) {
         const imageUrl = response.data.items[0].link;
@@ -75,7 +73,6 @@ const RecipeSuggestions = ({ pantryItems, dietPreferences }) => {
       setFoodImage("");
     }
   };
-  
 
   // Handle Like button click
   const handleLike = () => {

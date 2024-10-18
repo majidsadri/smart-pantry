@@ -123,7 +123,7 @@ def recommend():
         }), 400
 
     # Look for an activated profile with the given profile name if profile_name is not None
-    if profile_name:
+    if profile_name and profile_name.lower() != 'none':
         profile_data = next(
             (p for p in profiles if p["name"].lower() == profile_name.lower() and p.get("activated")),
             None
@@ -153,7 +153,10 @@ def recommend():
     if restrictions:
         prompt += f" Also, consider these dietary restrictions: {restrictions}."
     if usual_meals.lower() != "none":
-        prompt += f" The recipes should focus on {usual_meals} meals."
+        if usual_meals.lower() == "persian":
+            prompt += " The recipes should focus on Irooni traditional food."
+        else:
+            prompt += f" The recipes should focus on {usual_meals} meals."
 
     prompt += """
     Provide each recipe in the following format:

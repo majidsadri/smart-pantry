@@ -10,15 +10,6 @@
       "expired": "yes"
     },
     {
-      "id": "ffc2",
-      "name": "Sugar",
-      "amount": "2",
-      "measurement": "units",
-      "image": "https://images.pexels.com/photos/2523650/pexels-photo-2523650.jpeg?auto=compress&cs=tinysrgb&h=350",
-      "purchaseDate": "2024-09-03",
-      "expired": "no"
-    },
-    {
       "id": "0c7e",
       "name": "rice",
       "amount": "4",
@@ -100,12 +91,39 @@
       "expired": "no"
     },
     {
-      "id": "3f1f",
-      "name": "paprika",
+      "id": "c7b3",
+      "name": "lamb",
       "amount": "2",
+      "measurement": "kg",
+      "image": "https://images.pexels.com/photos/678448/pexels-photo-678448.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-18",
+      "expired": "no"
+    },
+    {
+      "id": "def2",
+      "name": "olive",
+      "amount": "3",
       "measurement": "units",
-      "image": "https://images.pexels.com/photos/1843385/pexels-photo-1843385.jpeg?auto=compress&cs=tinysrgb&h=350",
-      "purchaseDate": "2024-10-16",
+      "image": "https://images.pexels.com/photos/1047312/pexels-photo-1047312.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-18",
+      "expired": "no"
+    },
+    {
+      "id": "f0b3",
+      "name": "salt",
+      "amount": "3",
+      "measurement": "units",
+      "image": "https://images.pexels.com/photos/2320244/pexels-photo-2320244.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-18",
+      "expired": "no"
+    },
+    {
+      "id": "e4e7",
+      "name": "tumeric",
+      "amount": "3",
+      "measurement": "units",
+      "image": "https://images.pexels.com/photos/4198431/pexels-photo-4198431.jpeg?auto=compress&cs=tinysrgb&h=350",
+      "purchaseDate": "2024-10-18",
       "expired": "no"
     }
   ],
