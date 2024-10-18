@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Paper, TextField, Button, MenuItem, Typography, Grid } from "@mui/material";
+import { Paper, TextField, Button, MenuItem, Typography, Grid, IconButton } from "@mui/material";
+import SaveIcon from '@mui/icons-material/Save';
+import SelectAllIcon from '@mui/icons-material/SelectAll';
 import "./Profile.css";
 
 const Profile = ({ updateDietPreferences }) => {
@@ -36,7 +38,7 @@ const Profile = ({ updateDietPreferences }) => {
       diet,
       restrictions,
       usualMeals,
-      activated: true, // Add the activated flag here
+      activated: false, // Add the activated flag here
     };
   
     fetch('http://127.0.0.1:5001/save_profile', {
@@ -54,8 +56,21 @@ const Profile = ({ updateDietPreferences }) => {
       })
       .catch(error => console.error("Error saving profile:", error));
   };
-  
-  
+
+  const handleProfileSelect = () => {
+    fetch('http://127.0.0.1:5001/activate_profile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Profile activated:", data);
+      })
+      .catch(error => console.error("Error activating profile:", error));
+  };
 
   return (
     <Paper elevation={3} style={{ padding: "20px", marginBottom: "20px" }}>
@@ -159,10 +174,13 @@ const Profile = ({ updateDietPreferences }) => {
           </TextField>
         </Grid>
 
-        <Grid item xs={12}>
-          <Button variant="contained" color="primary" onClick={handleProfileSubmit}>
-            Save Profile
-          </Button>
+        <Grid item xs={12} style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <IconButton color="primary" onClick={handleProfileSubmit}>
+            <SaveIcon />
+          </IconButton>
+          <IconButton color="secondary" onClick={handleProfileSelect}>
+            <SelectAllIcon />
+          </IconButton>
         </Grid>
       </Grid>
     </Paper>

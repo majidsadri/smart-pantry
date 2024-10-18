@@ -66,6 +66,16 @@ def save_profile():
     else:
         return jsonify({"status": "Error saving profile."}), 500
 
+@app.route('/get_profiles', methods=['GET'])
+def get_profiles():
+    profiles = load_all_profiles()
+    if profiles:
+        logging.info(f"Profile data retrieved: {profiles}")
+        return jsonify(profiles), 200
+    else:
+        logging.warning("No profiles found. Returning empty list.")
+        return jsonify([]), 200
+
 @app.route('/get_profile', methods=['GET'])
 def get_profile():
     profile_name = request.args.get('name')
@@ -82,6 +92,22 @@ def get_profile():
     else:
         logging.warning("Profile name not provided in request. Returning first profile or default.")
         return jsonify(profiles[0] if profiles else {"diet": "None", "restrictions": "", "usualMeals": "Regular"}), 200
+
+@app.route('/activate_profile', methods=['POST'])
+def activate_profile():
+    profile_name = request.json.get("name")
+
+    if not profile_name:
+        return jsonify({"status": "Profile name is required."}), 400
+
+    profiles = load_all_profiles()
+    for profile in profiles:
+        profile["activated"] = profile["name"] == profile_name
+
+    if save_all_profiles(profiles):
+        return jsonify({"status": f"Profile '{profile_name}' activated successfully."}), 200
+    else:
+        return jsonify({"status": "Error activating profile."}), 500
 
 @app.route('/get_tip', methods=['GET'])
 def get_tip():

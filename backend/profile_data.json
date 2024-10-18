@@ -1,6 +1,16 @@
 {
     "profiles": [
         {
+            "name": "John",
+            "purpose": "Single Person",
+            "familyMembers": 1,
+            "cookDays": 0,
+            "diet": "Vegan",
+            "restrictions": "",
+            "usualMeals": "Regular",
+            "activated": false
+        },
+        {
             "name": "Majid",
             "purpose": "Couple",
             "familyMembers": 1,
